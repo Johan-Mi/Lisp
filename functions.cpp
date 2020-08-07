@@ -2,9 +2,7 @@
 
 std::unique_ptr<LispObject> car(LispObject &obj) {
 	return std::visit([](auto &&arg){
-			using T = std::decay<decltype(arg)>;
-			if constexpr(std::is_same<T, LispCons>()
-					|| std::is_same<T, LispNil>()) {
+			if constexpr(requires { car(arg); }) {
 				return car(arg);
 			} else {
 				return std::make_unique<LispObject>(LispNil{});
@@ -23,9 +21,7 @@ std::unique_ptr<LispObject> car(LispNil &obj) {
 
 std::unique_ptr<LispObject> cdr(LispObject &obj) {
 	return std::visit([](auto &&arg){
-			using T = std::decay<decltype(arg)>;
-			if constexpr(std::is_same<T, LispCons>()
-					|| std::is_same<T, LispNil>()) {
+			if constexpr(requires { cdr(arg); }) {
 				return cdr(arg);
 			} else {
 				return std::make_unique<LispObject>(LispNil{});

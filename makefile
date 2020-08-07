@@ -1,5 +1,5 @@
 CC = g++
-CPPFLAGS = -O3 -Wall -std=c++17
+CPPFLAGS = -O3 -Wall -std=c++20
 
 main: main.o types.o functions.o
 	${CC} ${CPPFLAGS} -o main main.o types.o functions.o
