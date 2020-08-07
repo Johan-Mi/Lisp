@@ -26,6 +26,23 @@ std::string to_string(Symbol const &obj) {
 	return obj.value;
 }
 
+template<>
+std::string to_string_cons(std::string const &accum, Object const &obj) {
+	return std::visit([&](auto &&arg){
+			return to_string_cons(accum, arg);
+			}, obj);
+}
+
+template<>
+std::string to_string_cons(std::string const &accum, Nil const &obj) {
+	return accum + ')';
+}
+
+template<>
+std::string to_string_cons(std::string const &accum, Cons const &obj) {
+	return to_string_cons(accum + ' ' + to_string(*obj.first), *obj.second);
+}
+
 std::unique_ptr<Object> car(Object const &obj) {
 	return std::visit([](auto &&arg){
 			if constexpr(requires { car(arg); }) {
