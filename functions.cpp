@@ -18,6 +18,14 @@ std::string to_string(Integer const &obj) {
 	return std::to_string(obj.value);
 }
 
+std::string to_string(Bit const &obj) {
+	return obj.value ? "1" : "0";
+}
+
+std::string to_string(Symbol const &obj) {
+	return obj.value;
+}
+
 std::unique_ptr<Object> car(Object const &obj) {
 	return std::visit([](auto &&arg){
 			if constexpr(requires { car(arg); }) {

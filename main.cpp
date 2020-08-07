@@ -21,10 +21,18 @@ int main() {
 				std::make_unique<Object>(Integer{1}),
 				std::make_unique<Object>(Integer{2})}};
 
+	auto e = Object{Cons{
+				std::make_unique<Object>(Bit{1}),
+				std::make_unique<Object>(Bit{0})}};
+
+	auto f = Object{Symbol{"foo"}};
+
 	std::cout << to_string(a) << '\n';
 	std::cout << to_string(b) << '\n';
 	std::cout << to_string(c) << '\n';
 	std::cout << to_string(d) << '\n';
+	std::cout << to_string(e) << '\n';
+	std::cout << to_string(f) << '\n';
 
 	return EXIT_SUCCESS;
 }

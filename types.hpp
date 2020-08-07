@@ -2,12 +2,15 @@
 
 #include <variant>
 #include <memory>
+#include <string>
 
 struct Nil;
 struct Cons;
 struct Integer;
+struct Bit;
+struct Symbol;
 
-using Object = std::variant<Nil, Cons, Integer>;
+using Object = std::variant<Nil, Cons, Integer, Bit, Symbol>;
 
 struct Nil {};
 
@@ -22,4 +25,12 @@ struct Cons {
 
 struct Integer {
 	int value;
+};
+
+struct Bit {
+	bool value;
+};
+
+struct Symbol {
+	std::string value;
 };
