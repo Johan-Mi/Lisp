@@ -5,22 +5,26 @@
 #include "functions.hpp"
 
 int main() {
-	auto a = LispObject{LispCons{
-				std::make_unique<LispObject>(LispInteger{1}),
-				std::make_unique<LispObject>(LispCons{
-						std::make_unique<LispObject>(LispInteger{2}),
-						std::make_unique<LispObject>(LispNil{})})}};
+	auto a = Object{Cons{
+				std::make_unique<Object>(Integer{1}),
+				std::make_unique<Object>(Cons{
+						std::make_unique<Object>(Integer{2}),
+						std::make_unique<Object>(Nil{})})}};
 
-	auto b = LispObject{LispCons{
-				std::make_unique<LispObject>(LispNil{}),
-				std::make_unique<LispObject>(LispNil{})}};
+	auto b = Object{Cons{
+				std::make_unique<Object>(Nil{}),
+				std::make_unique<Object>(Nil{})}};
 
-	auto c = LispObject{LispNil{}};
+	auto c = Object{Nil{}};
+
+	auto d = Object{Cons{
+				std::make_unique<Object>(Integer{1}),
+				std::make_unique<Object>(Integer{2})}};
 
 	std::cout << to_string(a) << '\n';
 	std::cout << to_string(b) << '\n';
-	
-std::cout << to_string(c) << '\n';
+	std::cout << to_string(c) << '\n';
+	std::cout << to_string(d) << '\n';
 
 	return EXIT_SUCCESS;
 }
