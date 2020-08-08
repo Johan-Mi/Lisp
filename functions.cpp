@@ -43,40 +43,40 @@ std::string to_string_cons(std::string const &accum, Cons const &obj) {
 	return to_string_cons(accum + ' ' + to_string(*obj.first), *obj.second);
 }
 
-std::unique_ptr<Object> car(Object const &obj) {
+std::shared_ptr<Object> car(Object const &obj) {
 	return std::visit([](auto &&arg){
 			if constexpr(requires { car(arg); }) {
 				return car(arg);
 			} else {
-				return std::make_unique<Object>(Nil{});
+				return std::make_shared<Object>(Nil{});
 				// TODO Return an error
 			}
 			}, obj);
 }
 
-std::unique_ptr<Object> car(Cons const &obj) {
-	return std::make_unique<Object>(*obj.first);
+std::shared_ptr<Object> car(Cons const &obj) {
+	return obj.first;
 }
 
-std::unique_ptr<Object> car(Nil const &obj) {
-	return std::make_unique<Object>(Nil{});
+std::shared_ptr<Object> car(Nil const &obj) {
+	return std::make_shared<Object>(Nil{});
 }
 
-std::unique_ptr<Object> cdr(Object const &obj) {
+std::shared_ptr<Object> cdr(Object const &obj) {
 	return std::visit([](auto &&arg){
 			if constexpr(requires { cdr(arg); }) {
 				return cdr(arg);
 			} else {
-				return std::make_unique<Object>(Nil{});
+				return std::make_shared<Object>(Nil{});
 				// TODO Return an error
 			}
 			}, obj);
 }
 
-std::unique_ptr<Object> cdr(Cons const &obj) {
-	return std::make_unique<Object>(*obj.second);
+std::shared_ptr<Object> cdr(Cons const &obj) {
+	return obj.second;
 }
 
-std::unique_ptr<Object> cdr(Nil const &obj) {
-	return std::make_unique<Object>(Nil{});
+std::shared_ptr<Object> cdr(Nil const &obj) {
+	return std::make_shared<Object>(Nil{});
 }

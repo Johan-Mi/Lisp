@@ -4,23 +4,14 @@
 #include <memory>
 #include <string>
 
-struct Nil;
-struct Cons;
-struct Integer;
-struct Bit;
-struct Symbol;
-
-using Object = std::variant<Nil, Cons, Integer, Bit, Symbol>;
+using Object = std::variant<struct Nil, struct Cons, struct Integer,
+	  struct Bit, struct Symbol, struct Function>;
 
 struct Nil {};
 
 struct Cons {
-	std::unique_ptr<Object> first;
-	std::unique_ptr<Object> second;
-
-	Cons(Cons const &other);
-	Cons(std::unique_ptr<Object> const &first,
-			std::unique_ptr<Object> const &second);
+	std::shared_ptr<Object> first;
+	std::shared_ptr<Object> second;
 };
 
 struct Integer {
@@ -33,4 +24,9 @@ struct Bit {
 
 struct Symbol {
 	std::string value;
+};
+
+struct Function {
+	Cons parameters;
+	std::shared_ptr<Object> body;
 };

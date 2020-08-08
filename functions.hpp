@@ -23,9 +23,9 @@ std::string to_string_cons(std::string const &accum, Nil const &obj);
 template<>
 std::string to_string_cons(std::string const &accum, Cons const &obj);
 
-std::unique_ptr<Object> car(Object const &obj);
-std::unique_ptr<Object> car(Cons const &obj);
-std::unique_ptr<Object> car(Nil const &obj);
-std::unique_ptr<Object> cdr(Object const &obj);
-std::unique_ptr<Object> cdr(Cons const &obj);
-std::unique_ptr<Object> cdr(Nil const &obj);
+std::shared_ptr<Object> car(Object const &obj);
+std::shared_ptr<Object> car(Cons const &obj);
+std::shared_ptr<Object> car(Nil const &obj);
+std::shared_ptr<Object> cdr(Object const &obj);
+std::shared_ptr<Object> cdr(Cons const &obj);
+std::shared_ptr<Object> cdr(Nil const &obj);
