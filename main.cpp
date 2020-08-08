@@ -5,27 +5,33 @@
 #include "functions.hpp"
 
 int main() {
-	auto const a = Object{Cons{
+	// (1 2)
+	auto const a = std::make_shared<Object>(cons(
 				std::make_shared<Object>(Integer{1}),
-				std::make_shared<Object>(Cons{
+				std::make_shared<Object>(cons(
 						std::make_shared<Object>(Integer{2}),
-						std::make_shared<Object>(Nil{})})}};
+						std::make_shared<Object>(Nil{})))));
 
-	auto const b = Object{Cons{
+	// (NIL)
+	auto const b = std::make_shared<Object>(cons(
 				std::make_shared<Object>(Nil{}),
-				std::make_shared<Object>(Nil{})}};
+				std::make_shared<Object>(Nil{})));
 
-	auto const c = Object{Nil{}};
+	// NIL
+	auto const c = std::make_shared<Object>(Nil{});
 
-	auto const d = Object{Cons{
+	// (1 . 2)
+	auto const d = std::make_shared<Object>(cons(
 				std::make_shared<Object>(Integer{1}),
-				std::make_shared<Object>(Integer{2})}};
+				std::make_shared<Object>(Integer{2})));
 
-	auto const e = Object{Cons{
+	// (1 . 0)
+	auto const e = std::make_shared<Object>(cons(
 				std::make_shared<Object>(Bit{1}),
-				std::make_shared<Object>(Bit{0})}};
+				std::make_shared<Object>(Bit{0})));
 
-	auto const f = Object{Symbol{"foo"}};
+	// foo
+	auto const f = std::make_shared<Object>(Symbol{"foo"});
 
 	std::cout << to_string(a) << '\n';
 	std::cout << to_string(b) << '\n';
@@ -33,7 +39,7 @@ int main() {
 	std::cout << to_string(d) << '\n';
 	std::cout << to_string(e) << '\n';
 	std::cout << to_string(f) << '\n';
-	std::cout << to_string(*car(f)) << '\n';
+	std::cout << to_string(car(f)) << '\n';
 
 	return EXIT_SUCCESS;
 }

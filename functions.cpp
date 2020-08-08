@@ -1,10 +1,10 @@
 #include "functions.hpp"
 #include "util.hpp"
 
-std::string to_string(Object const &obj) {
+std::string to_string(std::shared_ptr<Object> obj) {
 	return std::visit([](auto &&arg){
 			return to_string(arg);
-			}, obj);
+			}, *obj);
 }
 
 std::string to_string(Nil const &obj) {
@@ -12,7 +12,7 @@ std::string to_string(Nil const &obj) {
 }
 
 std::string to_string(Cons const &obj) {
-	return to_string_cons('(' + to_string(*obj.first), *obj.second);
+	return to_string_cons('(' + to_string(obj.first), *obj.second);
 }
 
 std::string to_string(Integer const &obj) {
@@ -24,11 +24,15 @@ std::string to_string(Bit const &obj) {
 }
 
 std::string to_string(Symbol const &obj) {
-	return obj.value;
+	return obj.name;
 }
 
 std::string to_string(Error const &obj) {
 	return "ERROR: " + obj.message;
+}
+
+std::string to_string(Function const &obj) {
+	return "FUNCTION"; // TODO Proper formatting
 }
 
 template<>
@@ -45,10 +49,10 @@ std::string to_string_cons(std::string const &accum, Nil const &obj) {
 
 template<>
 std::string to_string_cons(std::string const &accum, Cons const &obj) {
-	return to_string_cons(accum + ' ' + to_string(*obj.first), *obj.second);
+	return to_string_cons(accum + ' ' + to_string(obj.first), *obj.second);
 }
 
-std::shared_ptr<Object> car(Object const &obj) {
+std::shared_ptr<Object> car(std::shared_ptr<Object> obj) {
 	return std::visit([](auto &&arg){
 			using T = std::decay<decltype(arg)>;
 			if constexpr(is_any_of<T, Cons, Nil>) {
@@ -57,7 +61,7 @@ std::shared_ptr<Object> car(Object const &obj) {
 				return std::make_shared<Object>(Error{
 						"car() called with invalid argument type"});
 			}
-			}, obj);
+			}, *obj);
 }
 
 std::shared_ptr<Object> car(Cons const &obj) {
@@ -68,7 +72,7 @@ std::shared_ptr<Object> car(Nil const &obj) {
 	return std::make_shared<Object>(Nil{});
 }
 
-std::shared_ptr<Object> cdr(Object const &obj) {
+std::shared_ptr<Object> cdr(std::shared_ptr<Object> obj) {
 	return std::visit([](auto &&arg){
 			using T = std::decay<decltype(arg)>;
 			if constexpr(is_any_of<T, Cons, Nil>) {
@@ -77,7 +81,7 @@ std::shared_ptr<Object> cdr(Object const &obj) {
 				return std::make_shared<Object>(Error{
 						"car() called with invalid argument type"});
 			}
-			}, obj);
+			}, *obj);
 }
 
 std::shared_ptr<Object> cdr(Cons const &obj) {
@@ -86,4 +90,8 @@ std::shared_ptr<Object> cdr(Cons const &obj) {
 
 std::shared_ptr<Object> cdr(Nil const &obj) {
 	return std::make_shared<Object>(Nil{});
+}
+
+Cons cons(std::shared_ptr<Object> first, std::shared_ptr<Object> second) {
+	return Cons{first, second};
 }

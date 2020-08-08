@@ -23,7 +23,7 @@ struct Bit {
 };
 
 struct Symbol {
-	std::string value;
+	std::string name;
 };
 
 struct Function {
