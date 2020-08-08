@@ -5,27 +5,27 @@
 #include "functions.hpp"
 
 int main() {
-	auto a = Object{Cons{
+	auto const a = Object{Cons{
 				std::make_shared<Object>(Integer{1}),
 				std::make_shared<Object>(Cons{
 						std::make_shared<Object>(Integer{2}),
 						std::make_shared<Object>(Nil{})})}};
 
-	auto b = Object{Cons{
+	auto const b = Object{Cons{
 				std::make_shared<Object>(Nil{}),
 				std::make_shared<Object>(Nil{})}};
 
-	auto c = Object{Nil{}};
+	auto const c = Object{Nil{}};
 
-	auto d = Object{Cons{
+	auto const d = Object{Cons{
 				std::make_shared<Object>(Integer{1}),
 				std::make_shared<Object>(Integer{2})}};
 
-	auto e = Object{Cons{
+	auto const e = Object{Cons{
 				std::make_shared<Object>(Bit{1}),
 				std::make_shared<Object>(Bit{0})}};
 
-	auto f = Object{Symbol{"foo"}};
+	auto const f = Object{Symbol{"foo"}};
 
 	std::cout << to_string(a) << '\n';
 	std::cout << to_string(b) << '\n';
@@ -33,6 +33,7 @@ int main() {
 	std::cout << to_string(d) << '\n';
 	std::cout << to_string(e) << '\n';
 	std::cout << to_string(f) << '\n';
+	std::cout << to_string(*car(f)) << '\n';
 
 	return EXIT_SUCCESS;
 }

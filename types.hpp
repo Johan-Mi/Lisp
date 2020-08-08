@@ -5,7 +5,7 @@
 #include <string>
 
 using Object = std::variant<struct Nil, struct Cons, struct Integer,
-	  struct Bit, struct Symbol, struct Function>;
+	  struct Bit, struct Symbol, struct Function, struct Error>;
 
 struct Nil {};
 
@@ -29,4 +29,8 @@ struct Symbol {
 struct Function {
 	Cons parameters;
 	std::shared_ptr<Object> body;
+};
+
+struct Error {
+	std::string message;
 };

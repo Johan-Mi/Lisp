@@ -1,4 +1,5 @@
 #include "functions.hpp"
+#include "util.hpp"
 
 std::string to_string(Object const &obj) {
 	return std::visit([](auto &&arg){
@@ -26,6 +27,10 @@ std::string to_string(Symbol const &obj) {
 	return obj.value;
 }
 
+std::string to_string(Error const &obj) {
+	return "ERROR: " + obj.message;
+}
+
 template<>
 std::string to_string_cons(std::string const &accum, Object const &obj) {
 	return std::visit([&](auto &&arg){
@@ -45,11 +50,12 @@ std::string to_string_cons(std::string const &accum, Cons const &obj) {
 
 std::shared_ptr<Object> car(Object const &obj) {
 	return std::visit([](auto &&arg){
-			if constexpr(requires { car(arg); }) {
+			using T = std::decay<decltype(arg)>;
+			if constexpr(is_any_of<T, Cons, Nil>) {
 				return car(arg);
 			} else {
-				return std::make_shared<Object>(Nil{});
-				// TODO Return an error
+				return std::make_shared<Object>(Error{
+						"car() called with invalid argument type"});
 			}
 			}, obj);
 }
@@ -64,11 +70,12 @@ std::shared_ptr<Object> car(Nil const &obj) {
 
 std::shared_ptr<Object> cdr(Object const &obj) {
 	return std::visit([](auto &&arg){
-			if constexpr(requires { cdr(arg); }) {
+			using T = std::decay<decltype(arg)>;
+			if constexpr(is_any_of<T, Cons, Nil>) {
 				return cdr(arg);
 			} else {
-				return std::make_shared<Object>(Nil{});
-				// TODO Return an error
+				return std::make_shared<Object>(Error{
+						"car() called with invalid argument type"});
 			}
 			}, obj);
 }

@@ -10,6 +10,7 @@ std::string to_string(Cons const &obj);
 std::string to_string(Integer const &obj);
 std::string to_string(Bit const &obj);
 std::string to_string(Symbol const &obj);
+std::string to_string(Error const &obj);
 
 template<class T>
 std::string to_string_cons(std::string const &accum, T const &obj) {
