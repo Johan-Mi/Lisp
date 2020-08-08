@@ -8,11 +8,11 @@ std::string to_string(std::shared_ptr<Object> obj) {
 }
 
 std::string to_string(Nil const &obj) {
-	return "NIL";
+	return "nil";
 }
 
 std::string to_string(Cons const &obj) {
-	return to_string_cons('(' + to_string(obj.first), *obj.second);
+	return to_string_cons('(' + to_string(obj.first), obj.second);
 }
 
 std::string to_string(Integer const &obj) {
@@ -28,18 +28,19 @@ std::string to_string(Symbol const &obj) {
 }
 
 std::string to_string(Error const &obj) {
-	return "ERROR: " + obj.message;
+	return "Error: " + obj.message;
 }
 
 std::string to_string(Function const &obj) {
-	return "FUNCTION"; // TODO Proper formatting
+	return "Function " + to_string(obj.parameters) + " => "
+		+ to_string(obj.body);
 }
 
-template<>
-std::string to_string_cons(std::string const &accum, Object const &obj) {
+std::string to_string_cons(std::string const &accum,
+		std::shared_ptr<Object> obj) {
 	return std::visit([&](auto &&arg){
 			return to_string_cons(accum, arg);
-			}, obj);
+			}, *obj);
 }
 
 template<>
@@ -49,13 +50,12 @@ std::string to_string_cons(std::string const &accum, Nil const &obj) {
 
 template<>
 std::string to_string_cons(std::string const &accum, Cons const &obj) {
-	return to_string_cons(accum + ' ' + to_string(obj.first), *obj.second);
+	return to_string_cons(accum + ' ' + to_string(obj.first), obj.second);
 }
 
 std::shared_ptr<Object> car(std::shared_ptr<Object> obj) {
 	return std::visit([](auto &&arg){
-			using T = std::decay<decltype(arg)>;
-			if constexpr(is_any_of<T, Cons, Nil>) {
+			if constexpr(requires { car(arg); }) {
 				return car(arg);
 			} else {
 				return std::make_shared<Object>(Error{
@@ -74,8 +74,7 @@ std::shared_ptr<Object> car(Nil const &obj) {
 
 std::shared_ptr<Object> cdr(std::shared_ptr<Object> obj) {
 	return std::visit([](auto &&arg){
-			using T = std::decay<decltype(arg)>;
-			if constexpr(is_any_of<T, Cons, Nil>) {
+			if constexpr(requires { cdr(arg); }) {
 				return cdr(arg);
 			} else {
 				return std::make_shared<Object>(Error{

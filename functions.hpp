@@ -18,8 +18,8 @@ std::string to_string_cons(std::string const &accum, T const &obj) {
 	return accum + " . " + to_string(obj) + ')';
 }
 
-template<>
-std::string to_string_cons(std::string const &accum, Object const &obj);
+std::string to_string_cons(std::string const &accum,
+		std::shared_ptr<Object> obj);
 template<>
 std::string to_string_cons(std::string const &accum, Nil const &obj);
 template<>
