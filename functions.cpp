@@ -107,7 +107,11 @@ size_t list_length(Cons const &list, size_t const accum = 0) {
 	}
 }
 
-std::shared_ptr<Object> nth(size_t index, std::shared_ptr<Object> list) {
+std::shared_ptr<Object> apply(BuiltinFunction const &func, Cons const &args) {
+	return func.func(args);
+}
+
+std::shared_ptr<Object> nth(size_t const index, std::shared_ptr<Object> list) {
 	return std::visit([&index](auto &&arg){
 			if constexpr(requires { nth(index, arg); }) {
 				return nth(index, arg);
@@ -118,7 +122,7 @@ std::shared_ptr<Object> nth(size_t index, std::shared_ptr<Object> list) {
 			}, *list);
 }
 
-std::shared_ptr<Object> nth(size_t index, Cons const &list) {
+std::shared_ptr<Object> nth(size_t const index, Cons const &list) {
 	if(index == 0) {
 		return car(list);
 	} else {
@@ -126,7 +130,7 @@ std::shared_ptr<Object> nth(size_t index, Cons const &list) {
 	}
 }
 
-std::shared_ptr<Object> nth(size_t index, Nil const &list) {
+std::shared_ptr<Object> nth(size_t const index, Nil const &list) {
 	return std::make_shared<Object>(Nil{});
 }
 

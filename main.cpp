@@ -32,6 +32,14 @@ int main() {
 					X(Symbol{"b"})),
 			X(Integer{42})});
 
+	auto const h = BuiltinFunction{
+			wrapped_car};
+
+	auto const i = apply(
+			h,
+			make_list(
+				a));
+
 #undef X
 
 	std::cout << to_string(a) << '\n'; // (1 2)
@@ -46,6 +54,8 @@ int main() {
 	std::cout << to_string(f) << '\n'; // foo
 	std::cout << to_string(car(f)) << '\n'; // Error
 	std::cout << to_string(g) << '\n'; // Function (a b) => 42
+	std::cout << to_string(h) << '\n'; // Builtin function
+	std::cout << to_string(i) << '\n'; // 1
 
 	return EXIT_SUCCESS;
 }
