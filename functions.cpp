@@ -58,11 +58,13 @@ std::string to_string_cons(std::string const &accum, Cons const &obj) {
 
 std::shared_ptr<Object> car(std::shared_ptr<Object> obj) {
 	return std::visit([](auto &&arg){
+			using T = std::decay_t<decltype(arg)>;
 			if constexpr(requires { car(arg); }) {
 				return car(arg);
 			} else {
 				return std::make_shared<Object>(Error{
-						"car() called with invalid argument type"});
+						"car() called with invalid argument type "
+						+ std::string(name_of_type<T>)});
 			}
 			}, *obj);
 }
@@ -77,11 +79,13 @@ std::shared_ptr<Object> car(Nil const &obj) {
 
 std::shared_ptr<Object> cdr(std::shared_ptr<Object> obj) {
 	return std::visit([](auto &&arg){
+			using T = std::decay_t<decltype(arg)>;
 			if constexpr(requires { cdr(arg); }) {
 				return cdr(arg);
 			} else {
 				return std::make_shared<Object>(Error{
-						"car() called with invalid argument type"});
+						"car() called with invalid argument type "
+						+ std::string(name_of_type<T>)});
 			}
 			}, *obj);
 }
