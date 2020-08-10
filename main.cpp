@@ -7,34 +7,29 @@
 int main() {
 #define X std::make_shared<Object>
 
-	auto const a = X(cons(
-				X(Integer{1}),
-				X(cons(
-						X(Integer{2}),
-						X(Nil{})))));
+	auto const a = X(make_list(
+			X(Integer{1}),
+			X(Integer{2})));
 
-	auto const b = X(cons(
-				X(Nil{}),
-				X(Nil{})));
+	auto const b = X(make_list(
+			X(Nil{})));
 
 	auto const c = X(Nil{});
 
-	auto const d = X(cons(
+	auto const d = X(make_unterminated_list(
 				X(Integer{1}),
 				X(Integer{2})));
 
-	auto const e = X(cons(
+	auto const e = X(make_unterminated_list(
 				X(Bit{1}),
 				X(Bit{0})));
 
 	auto const f = X(Symbol{"foo"});
 
 	auto const g = X(Function{
-			cons(
+			make_list(
 					X(Symbol{"a"}),
-					X(cons(
-							X(Symbol{"b"}),
-							X(Nil{})))),
+					X(Symbol{"b"})),
 			X(Integer{42})});
 
 #undef X

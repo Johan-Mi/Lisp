@@ -37,6 +37,24 @@ Cons cons(std::shared_ptr<Object> first, std::shared_ptr<Object> second);
 
 size_t list_length(size_t const accum, Cons const &list);
 
+Cons make_list(auto const &first, auto const &... rest) {
+	return cons(first, std::make_shared<Object>(make_list(rest...)));
+}
+
+Cons make_list(auto const &first) {
+	return cons(first, std::make_shared<Object>(Nil{}));
+}
+
+Cons make_unterminated_list(auto const &first, auto const &second,
+		auto const &... rest) {
+	return cons(first,
+			std::make_shared<Object>(make_unterminated_list(second, rest...)));
+}
+
+Cons make_unterminated_list(auto const &first, auto const &second) {
+	return cons(first, second);
+}
+
 std::shared_ptr<Object> nth(size_t index, std::shared_ptr<Object> list);
 std::shared_ptr<Object> nth(size_t index, Cons const &list);
 std::shared_ptr<Object> nth(size_t index, Nil const &list);
