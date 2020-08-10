@@ -36,6 +36,10 @@ std::string to_string(Function const &obj) {
 		+ to_string(obj.body);
 }
 
+std::string to_string(BuiltinFunction const &obj) {
+	return "Builtin function";
+}
+
 std::string to_string_cons(std::string const &accum,
 		std::shared_ptr<Object> obj) {
 	return std::visit([&](auto &&arg){
@@ -93,4 +97,37 @@ std::shared_ptr<Object> cdr(Nil const &obj) {
 
 Cons cons(std::shared_ptr<Object> first, std::shared_ptr<Object> second) {
 	return Cons{first, second};
+}
+
+size_t list_length(Cons const &list, size_t const accum = 0) {
+	if(std::holds_alternative<Cons>(*cdr(list))) {
+		return list_length(std::get<Cons>(*cdr(list)), accum + 1);
+	} else {
+		return accum + 1;
+		// TODO Warn if cdr is not nil?
+	}
+}
+
+std::shared_ptr<Object> wrapped_car(Cons const &args) {
+	size_t const num_args = list_length(args);
+
+	if(num_args != 1) {
+		return std::make_shared<Object>(Error{
+				"wrapped_car() expected 1 but got "
+				+ std::to_string(num_args)});
+	}
+
+	return car(car(args));
+}
+
+std::shared_ptr<Object> wrapped_cdr(Cons const &args) {
+	size_t const num_args = list_length(args);
+
+	if(num_args != 1) {
+		return std::make_shared<Object>(Error{
+				"wrapped_cdr() expected 1 but got "
+				+ std::to_string(num_args)});
+	}
+
+	return cdr(car(args));
 }

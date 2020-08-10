@@ -12,6 +12,7 @@ std::string to_string(Bit const &obj);
 std::string to_string(Symbol const &obj);
 std::string to_string(Error const &obj);
 std::string to_string(Function const &obj);
+std::string to_string(BuiltinFunction const &obj);
 
 template<class T>
 std::string to_string_cons(std::string const &accum, T const &obj) {
@@ -33,3 +34,8 @@ std::shared_ptr<Object> cdr(Cons const &obj);
 std::shared_ptr<Object> cdr(Nil const &obj);
 
 Cons cons(std::shared_ptr<Object> first, std::shared_ptr<Object> second);
+
+size_t list_length(size_t const accum, Cons const &list);
+
+std::shared_ptr<Object> wrapped_car(Cons const &args);
+std::shared_ptr<Object> wrapped_cdr(Cons const &args);

@@ -4,8 +4,14 @@
 #include <memory>
 #include <string>
 
+
 using Object = std::variant<struct Nil, struct Cons, struct Integer,
-	  struct Bit, struct Symbol, struct Function, struct Error>;
+	  struct Bit, struct Symbol, struct Function, struct Error,
+	  struct BuiltinFunction>;
+
+struct BuiltinFunction {
+	std::shared_ptr<Object>(*func)(struct Cons const&);
+};
 
 struct Nil {};
 
