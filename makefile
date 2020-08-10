@@ -8,5 +8,5 @@ main: main.o functions.o
 main.o: main.cpp types.hpp functions.hpp
 	${CC} ${CPPFLAGS} -c main.cpp
 
-functions.o: functions.cpp functions.hpp types.hpp util.hpp
+functions.o: functions.cpp functions.hpp types.hpp
 	${CC} ${CPPFLAGS} -c functions.cpp

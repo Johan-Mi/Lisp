@@ -1,5 +1,4 @@
 #include "functions.hpp"
-#include "util.hpp"
 
 std::string to_string(std::shared_ptr<Object> obj) {
 	return std::visit([](auto &&arg){
@@ -108,16 +107,39 @@ size_t list_length(Cons const &list, size_t const accum = 0) {
 	}
 }
 
+std::shared_ptr<Object> nth(size_t index, std::shared_ptr<Object> list) {
+	return std::visit([&index](auto &&arg){
+			if constexpr(requires { nth(index, arg); }) {
+				return nth(index, arg);
+			} else {
+				return std::make_shared<Object>(Error{
+						"nth() called with invalid argument type"});
+			}
+			}, *list);
+}
+
+std::shared_ptr<Object> nth(size_t index, Cons const &list) {
+	if(index == 0) {
+		return car(list);
+	} else {
+		return nth(index - 1, cdr(list));
+	}
+}
+
+std::shared_ptr<Object> nth(size_t index, Nil const &list) {
+	return std::make_shared<Object>(Nil{});
+}
+
 std::shared_ptr<Object> wrapped_car(Cons const &args) {
 	size_t const num_args = list_length(args);
 
 	if(num_args != 1) {
 		return std::make_shared<Object>(Error{
-				"wrapped_car() expected 1 but got "
+				"wrapped_car() expected 1 argument but got "
 				+ std::to_string(num_args)});
 	}
 
-	return car(car(args));
+	return car(nth(0, args));
 }
 
 std::shared_ptr<Object> wrapped_cdr(Cons const &args) {
@@ -125,9 +147,9 @@ std::shared_ptr<Object> wrapped_cdr(Cons const &args) {
 
 	if(num_args != 1) {
 		return std::make_shared<Object>(Error{
-				"wrapped_cdr() expected 1 but got "
+				"wrapped_cdr() expected 1 argument but got "
 				+ std::to_string(num_args)});
 	}
 
-	return cdr(car(args));
+	return cdr(nth(0, args));
 }

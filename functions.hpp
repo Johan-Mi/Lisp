@@ -37,5 +37,9 @@ Cons cons(std::shared_ptr<Object> first, std::shared_ptr<Object> second);
 
 size_t list_length(size_t const accum, Cons const &list);
 
+std::shared_ptr<Object> nth(size_t index, std::shared_ptr<Object> list);
+std::shared_ptr<Object> nth(size_t index, Cons const &list);
+std::shared_ptr<Object> nth(size_t index, Nil const &list);
+
 std::shared_ptr<Object> wrapped_car(Cons const &args);
 std::shared_ptr<Object> wrapped_cdr(Cons const &args);
