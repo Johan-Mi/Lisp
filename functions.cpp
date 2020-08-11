@@ -141,8 +141,7 @@ std::shared_ptr<Object const> apply(
 
 std::shared_ptr<Object const> eval(Cons const &list) {
 	if(std::holds_alternative<Cons>(*cdr(list))) {
-		return apply(car(list),
-				const_cast<Cons const &>(std::get<Cons>(*cdr(list))));
+		return apply(car(list), std::get<Cons>(*cdr(list)));
 	} else {
 		return std::make_shared<Object const>(
 				Error{"car of argument passed to eval() must be a cons"});
