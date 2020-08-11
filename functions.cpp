@@ -1,9 +1,11 @@
 #include "functions.hpp"
 
 std::string to_string(std::shared_ptr<Object> obj) {
-	return std::visit([](auto &&arg){
-			return to_string(arg);
-			}, *obj);
+	return std::visit(
+			[](auto &&arg) {
+				return to_string(arg);
+			},
+			*obj);
 }
 
 std::string to_string(Nil const &obj) {
@@ -32,18 +34,20 @@ std::string to_string(Error const &obj) {
 
 std::string to_string(Function const &obj) {
 	return "Function " + to_string(obj.parameters) + " => "
-		+ to_string(obj.body);
+			+ to_string(obj.body);
 }
 
 std::string to_string(BuiltinFunction const &obj) {
 	return "Builtin function";
 }
 
-std::string to_string_cons(std::string const &accum,
-		std::shared_ptr<Object> obj) {
-	return std::visit([&](auto &&arg){
-			return to_string_cons(accum, arg);
-			}, *obj);
+std::string to_string_cons(
+		std::string const &accum, std::shared_ptr<Object> obj) {
+	return std::visit(
+			[&](auto &&arg) {
+				return to_string_cons(accum, arg);
+			},
+			*obj);
 }
 
 template<>
@@ -57,16 +61,18 @@ std::string to_string_cons(std::string const &accum, Cons const &obj) {
 }
 
 std::shared_ptr<Object> car(std::shared_ptr<Object> obj) {
-	return std::visit([](auto &&arg){
-			using T = std::decay_t<decltype(arg)>;
-			if constexpr(requires { car(arg); }) {
-				return car(arg);
-			} else {
-				return std::make_shared<Object>(Error{
-						"car() called with invalid argument type "
-						+ std::string(name_of_type<T>)});
-			}
-			}, *obj);
+	return std::visit(
+			[](auto &&arg) {
+				using T = std::decay_t<decltype(arg)>;
+				if constexpr(requires { car(arg); }) {
+					return car(arg);
+				} else {
+					return std::make_shared<Object>(
+							Error{"car() called with invalid argument type "
+									+ std::string(name_of_type<T>)});
+				}
+			},
+			*obj);
 }
 
 std::shared_ptr<Object> car(Cons const &obj) {
@@ -78,16 +84,18 @@ std::shared_ptr<Object> car(Nil const &obj) {
 }
 
 std::shared_ptr<Object> cdr(std::shared_ptr<Object> obj) {
-	return std::visit([](auto &&arg){
-			using T = std::decay_t<decltype(arg)>;
-			if constexpr(requires { cdr(arg); }) {
-				return cdr(arg);
-			} else {
-				return std::make_shared<Object>(Error{
-						"car() called with invalid argument type "
-						+ std::string(name_of_type<T>)});
-			}
-			}, *obj);
+	return std::visit(
+			[](auto &&arg) {
+				using T = std::decay_t<decltype(arg)>;
+				if constexpr(requires { cdr(arg); }) {
+					return cdr(arg);
+				} else {
+					return std::make_shared<Object>(
+							Error{"car() called with invalid argument type "
+									+ std::string(name_of_type<T>)});
+				}
+			},
+			*obj);
 }
 
 std::shared_ptr<Object> cdr(Cons const &obj) {
@@ -116,14 +124,16 @@ std::shared_ptr<Object> apply(BuiltinFunction const &func, Cons const &args) {
 }
 
 std::shared_ptr<Object> nth(size_t const index, std::shared_ptr<Object> list) {
-	return std::visit([&index](auto &&arg){
-			if constexpr(requires { nth(index, arg); }) {
-				return nth(index, arg);
-			} else {
-				return std::make_shared<Object>(Error{
-						"nth() called with invalid argument type"});
-			}
-			}, *list);
+	return std::visit(
+			[&index](auto &&arg) {
+				if constexpr(requires { nth(index, arg); }) {
+					return nth(index, arg);
+				} else {
+					return std::make_shared<Object>(
+							Error{"nth() called with invalid argument type"});
+				}
+			},
+			*list);
 }
 
 std::shared_ptr<Object> nth(size_t const index, Cons const &list) {
@@ -142,9 +152,9 @@ std::shared_ptr<Object> wrapped_car(Cons const &args) {
 	size_t const num_args = list_length(args);
 
 	if(num_args != 1) {
-		return std::make_shared<Object>(Error{
-				"wrapped_car() expected 1 argument but got "
-				+ std::to_string(num_args)});
+		return std::make_shared<Object>(
+				Error{"wrapped_car() expected 1 argument but got "
+						+ std::to_string(num_args)});
 	}
 
 	return car(nth(0, args));
@@ -154,9 +164,9 @@ std::shared_ptr<Object> wrapped_cdr(Cons const &args) {
 	size_t const num_args = list_length(args);
 
 	if(num_args != 1) {
-		return std::make_shared<Object>(Error{
-				"wrapped_cdr() expected 1 argument but got "
-				+ std::to_string(num_args)});
+		return std::make_shared<Object>(
+				Error{"wrapped_cdr() expected 1 argument but got "
+						+ std::to_string(num_args)});
 	}
 
 	return cdr(nth(0, args));

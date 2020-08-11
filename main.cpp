@@ -7,38 +7,24 @@
 int main() {
 #define X std::make_shared<Object>
 
-	auto const a = X(make_list(
-			X(Integer{1}),
-			X(Integer{2})));
+	auto const a = X(make_list(X(Integer{1}), X(Integer{2})));
 
-	auto const b = X(make_list(
-			X(Nil{})));
+	auto const b = X(make_list(X(Nil{})));
 
 	auto const c = X(Nil{});
 
-	auto const d = X(make_unterminated_list(
-				X(Integer{1}),
-				X(Integer{2})));
+	auto const d = X(make_unterminated_list(X(Integer{1}), X(Integer{2})));
 
-	auto const e = X(make_unterminated_list(
-				X(Bit{1}),
-				X(Bit{0})));
+	auto const e = X(make_unterminated_list(X(Bit{1}), X(Bit{0})));
 
 	auto const f = X(Symbol{"foo"});
 
 	auto const g = X(Function{
-			make_list(
-					X(Symbol{"a"}),
-					X(Symbol{"b"})),
-			X(Integer{42})});
+			make_list(X(Symbol{"a"}), X(Symbol{"b"})), X(Integer{42})});
 
-	auto const h = BuiltinFunction{
-			wrapped_car};
+	auto const h = BuiltinFunction{wrapped_car};
 
-	auto const i = apply(
-			h,
-			make_list(
-				a));
+	auto const i = apply(h, make_list(a));
 
 #undef X
 

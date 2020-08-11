@@ -19,8 +19,8 @@ std::string to_string_cons(std::string const &accum, T const &obj) {
 	return accum + " . " + to_string(obj) + ')';
 }
 
-std::string to_string_cons(std::string const &accum,
-		std::shared_ptr<Object> obj);
+std::string to_string_cons(
+		std::string const &accum, std::shared_ptr<Object> obj);
 template<>
 std::string to_string_cons(std::string const &accum, Nil const &obj);
 template<>
@@ -45,8 +45,8 @@ Cons make_list(auto const &first) {
 	return cons(first, std::make_shared<Object>(Nil{}));
 }
 
-Cons make_unterminated_list(auto const &first, auto const &second,
-		auto const &... rest) {
+Cons make_unterminated_list(
+		auto const &first, auto const &second, auto const &... rest) {
 	return cons(first,
 			std::make_shared<Object>(make_unterminated_list(second, rest...)));
 }

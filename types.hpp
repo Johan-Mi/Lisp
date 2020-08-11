@@ -5,13 +5,11 @@
 #include <string>
 #include <string_view>
 
-
-using Object = std::variant<struct Nil, struct Cons, struct Integer,
-	  struct Bit, struct Symbol, struct Function, struct Error,
-	  struct BuiltinFunction>;
+using Object = std::variant<struct Nil, struct Cons, struct Integer, struct Bit,
+		struct Symbol, struct Function, struct Error, struct BuiltinFunction>;
 
 struct BuiltinFunction {
-	std::shared_ptr<Object>(*func)(struct Cons const&);
+	std::shared_ptr<Object> (*func)(struct Cons const &);
 };
 
 struct Nil {};
@@ -57,7 +55,7 @@ constexpr inline std::string_view name_of_type<Function> = "<type 'function'>";
 template<>
 constexpr inline std::string_view name_of_type<Error> = "<type 'error'>";
 template<>
-constexpr inline std::string_view name_of_type<BuiltinFunction>
-		= "<type 'builtin function'>";
+constexpr inline std::string_view
+		name_of_type<BuiltinFunction> = "<type 'builtin function'>";
 template<>
 constexpr inline std::string_view name_of_type<Nil> = name_of_type<Cons>;
