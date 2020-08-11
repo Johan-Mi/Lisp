@@ -5,7 +5,7 @@
 #include "functions.hpp"
 
 int main() {
-#define X std::make_shared<Object>
+#define X std::make_shared<Object const>
 
 	auto const a = X(make_list(X(Integer{1}), X(Integer{2})));
 

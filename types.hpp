@@ -27,17 +27,17 @@ using Object = std::variant<Nil, struct Cons, Integer, Bit, Symbol,
 		struct Function, Error, struct BuiltinFunction>;
 
 struct Cons {
-	std::shared_ptr<Object> first;
-	std::shared_ptr<Object> second;
+	std::shared_ptr<Object const> first;
+	std::shared_ptr<Object const> second;
 };
 
 struct BuiltinFunction {
-	std::shared_ptr<Object> (*func)(Cons const &);
+	std::shared_ptr<Object const> (*func)(Cons const &);
 };
 
 struct Function {
 	Cons parameters;
-	std::shared_ptr<Object> body;
+	std::shared_ptr<Object const> body;
 };
 
 template<class T>

@@ -1,6 +1,6 @@
 #include "functions.hpp"
 
-std::string to_string(std::shared_ptr<Object> obj) {
+std::string to_string(std::shared_ptr<Object const> obj) {
 	return std::visit(
 			[](auto &&arg) {
 				return to_string(arg);
@@ -42,7 +42,7 @@ std::string to_string(BuiltinFunction const &obj) {
 }
 
 std::string to_string_cons(
-		std::string const &accum, std::shared_ptr<Object> obj) {
+		std::string const &accum, std::shared_ptr<Object const> obj) {
 	return std::visit(
 			[&](auto &&arg) {
 				return to_string_cons(accum, arg);
@@ -60,14 +60,14 @@ std::string to_string_cons(std::string const &accum, Cons const &obj) {
 	return to_string_cons(accum + ' ' + to_string(obj.first), obj.second);
 }
 
-std::shared_ptr<Object> car(std::shared_ptr<Object> obj) {
+std::shared_ptr<Object const> car(std::shared_ptr<Object const> obj) {
 	return std::visit(
 			[](auto &&arg) {
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(requires { car(arg); }) {
 					return car(arg);
 				} else {
-					return std::make_shared<Object>(
+					return std::make_shared<Object const>(
 							Error{"car() called with invalid argument type "
 									+ std::string(name_of_type<T>)});
 				}
@@ -75,22 +75,22 @@ std::shared_ptr<Object> car(std::shared_ptr<Object> obj) {
 			*obj);
 }
 
-std::shared_ptr<Object> car(Cons const &obj) {
+std::shared_ptr<Object const> car(Cons const &obj) {
 	return obj.first;
 }
 
-std::shared_ptr<Object> car(Nil const &obj) {
-	return std::make_shared<Object>(Nil{});
+std::shared_ptr<Object const> car(Nil const &obj) {
+	return std::make_shared<Object const>(Nil{});
 }
 
-std::shared_ptr<Object> cdr(std::shared_ptr<Object> obj) {
+std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> obj) {
 	return std::visit(
 			[](auto &&arg) {
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(requires { cdr(arg); }) {
 					return cdr(arg);
 				} else {
-					return std::make_shared<Object>(
+					return std::make_shared<Object const>(
 							Error{"car() called with invalid argument type "
 									+ std::string(name_of_type<T>)});
 				}
@@ -98,15 +98,16 @@ std::shared_ptr<Object> cdr(std::shared_ptr<Object> obj) {
 			*obj);
 }
 
-std::shared_ptr<Object> cdr(Cons const &obj) {
+std::shared_ptr<Object const> cdr(Cons const &obj) {
 	return obj.second;
 }
 
-std::shared_ptr<Object> cdr(Nil const &obj) {
-	return std::make_shared<Object>(Nil{});
+std::shared_ptr<Object const> cdr(Nil const &obj) {
+	return std::make_shared<Object const>(Nil{});
 }
 
-Cons cons(std::shared_ptr<Object> first, std::shared_ptr<Object> second) {
+Cons cons(std::shared_ptr<Object const> first,
+		std::shared_ptr<Object const> second) {
 	return Cons{first, second};
 }
 
@@ -119,47 +120,50 @@ size_t list_length(Cons const &list, size_t const accum = 0) {
 	}
 }
 
-std::shared_ptr<Object> apply(std::shared_ptr<Object> func, Cons const &args) {
+std::shared_ptr<Object const> apply(
+		std::shared_ptr<Object const> func, Cons const &args) {
 	return std::visit(
 			[&args](auto &&contained) {
 				if constexpr(requires { apply(contained, args); }) {
 					return apply(contained, args);
 				} else {
-					return std::make_shared<Object>(
+					return std::make_shared<Object const>(
 							Error{"apply() called with invalid argument type"});
 				}
 			},
 			*func);
 }
 
-std::shared_ptr<Object> apply(BuiltinFunction const &func, Cons const &args) {
+std::shared_ptr<Object const> apply(
+		BuiltinFunction const &func, Cons const &args) {
 	return func.func(args);
 }
 
-std::shared_ptr<Object> eval(Cons const &list) {
+std::shared_ptr<Object const> eval(Cons const &list) {
 	if(std::holds_alternative<Cons>(*cdr(list))) {
 		return apply(car(list),
 				const_cast<Cons const &>(std::get<Cons>(*cdr(list))));
 	} else {
-		return std::make_shared<Object>(
+		return std::make_shared<Object const>(
 				Error{"car of argument passed to eval() must be a cons"});
 	}
 }
 
-std::shared_ptr<Object> nth(size_t const index, std::shared_ptr<Object> list) {
+std::shared_ptr<Object const> nth(
+		size_t const index, std::shared_ptr<Object const> list) {
 	return std::visit(
 			[&index](auto &&arg) {
 				if constexpr(requires { nth(index, arg); }) {
 					return nth(index, arg);
 				} else {
-					return std::make_shared<Object>(
+					return std::make_shared<Object const>(
 							Error{"nth() called with invalid argument type"});
 				}
 			},
 			*list);
 }
 
-std::shared_ptr<Object> nth(size_t const index, Cons const &list) {
+std::shared_ptr<Object const> nth(size_t const index, Cons const &list) {
 	if(index == 0) {
 		return car(list);
 	} else {
@@ -167,15 +171,15 @@ std::shared_ptr<Object> nth(size_t const index, Cons const &list) {
 	}
 }
 
-std::shared_ptr<Object> nth(size_t const index, Nil const &list) {
-	return std::make_shared<Object>(Nil{});
+std::shared_ptr<Object const> nth(size_t const index, Nil const &list) {
+	return std::make_shared<Object const>(Nil{});
 }
 
-std::shared_ptr<Object> wrapped_car(Cons const &args) {
+std::shared_ptr<Object const> wrapped_car(Cons const &args) {
 	size_t const num_args = list_length(args);
 
 	if(num_args != 1) {
-		return std::make_shared<Object>(
+		return std::make_shared<Object const>(
 				Error{"wrapped_car() expected 1 argument but got "
 						+ std::to_string(num_args)});
 	}
@@ -183,11 +187,11 @@ std::shared_ptr<Object> wrapped_car(Cons const &args) {
 	return car(nth(0, args));
 }
 
-std::shared_ptr<Object> wrapped_cdr(Cons const &args) {
+std::shared_ptr<Object const> wrapped_cdr(Cons const &args) {
 	size_t const num_args = list_length(args);
 
 	if(num_args != 1) {
-		return std::make_shared<Object>(
+		return std::make_shared<Object const>(
 				Error{"wrapped_cdr() expected 1 argument but got "
 						+ std::to_string(num_args)});
 	}
