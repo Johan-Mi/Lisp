@@ -4,7 +4,7 @@
 
 #include "types.hpp"
 
-std::string to_string(std::shared_ptr<Object const> obj);
+std::string to_string(std::shared_ptr<Object const> const obj);
 std::string to_string(Nil const &obj);
 std::string to_string(Cons const &obj);
 std::string to_string(Integer const &obj);
@@ -20,21 +20,21 @@ std::string to_string_cons(std::string const &accum, T const &obj) {
 }
 
 std::string to_string_cons(
-		std::string const &accum, std::shared_ptr<Object const> obj);
+		std::string const &accum, std::shared_ptr<Object const> const obj);
 template<>
 std::string to_string_cons(std::string const &accum, Nil const &obj);
 template<>
 std::string to_string_cons(std::string const &accum, Cons const &obj);
 
-std::shared_ptr<Object const> car(std::shared_ptr<Object const> obj);
+std::shared_ptr<Object const> car(std::shared_ptr<Object const> const obj);
 std::shared_ptr<Object const> car(Cons const &obj);
 std::shared_ptr<Object const> car(Nil const &obj);
-std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> obj);
+std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> const obj);
 std::shared_ptr<Object const> cdr(Cons const &obj);
 std::shared_ptr<Object const> cdr(Nil const &obj);
 
-Cons cons(std::shared_ptr<Object const> first,
-		std::shared_ptr<Object const> second);
+Cons cons(std::shared_ptr<Object const> const first,
+		std::shared_ptr<Object const> const second);
 
 size_t list_length(size_t const accum, Cons const &list);
 
@@ -57,14 +57,14 @@ Cons make_unterminated_list(auto const &first, auto const &second) {
 }
 
 std::shared_ptr<Object const> apply(
-		std::shared_ptr<Object const> func, Cons const &args);
+		std::shared_ptr<Object const> const func, Cons const &args);
 std::shared_ptr<Object const> apply(
 		BuiltinFunction const &func, Cons const &args);
 
 std::shared_ptr<Object const> eval(Cons const &list);
 
 std::shared_ptr<Object const> nth(
-		size_t const index, std::shared_ptr<Object const> list);
+		size_t const index, std::shared_ptr<Object const> const list);
 std::shared_ptr<Object const> nth(size_t const index, Cons const &list);
 std::shared_ptr<Object const> nth(size_t const index, Nil const &list);
 

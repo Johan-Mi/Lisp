@@ -1,6 +1,6 @@
 #include "functions.hpp"
 
-std::string to_string(std::shared_ptr<Object const> obj) {
+std::string to_string(std::shared_ptr<Object const> const obj) {
 	return std::visit(
 			[](auto &&arg) {
 				return to_string(arg);
@@ -42,7 +42,7 @@ std::string to_string(BuiltinFunction const &obj) {
 }
 
 std::string to_string_cons(
-		std::string const &accum, std::shared_ptr<Object const> obj) {
+		std::string const &accum, std::shared_ptr<Object const> const obj) {
 	return std::visit(
 			[&](auto &&arg) {
 				return to_string_cons(accum, arg);
@@ -60,7 +60,7 @@ std::string to_string_cons(std::string const &accum, Cons const &obj) {
 	return to_string_cons(accum + ' ' + to_string(obj.first), obj.second);
 }
 
-std::shared_ptr<Object const> car(std::shared_ptr<Object const> obj) {
+std::shared_ptr<Object const> car(std::shared_ptr<Object const> const obj) {
 	return std::visit(
 			[](auto &&arg) {
 				using T = std::decay_t<decltype(arg)>;
@@ -83,7 +83,7 @@ std::shared_ptr<Object const> car(Nil const &obj) {
 	return std::make_shared<Object const>(Nil{});
 }
 
-std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> obj) {
+std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> const obj) {
 	return std::visit(
 			[](auto &&arg) {
 				using T = std::decay_t<decltype(arg)>;
@@ -107,7 +107,7 @@ std::shared_ptr<Object const> cdr(Nil const &obj) {
 }
 
 Cons cons(std::shared_ptr<Object const> first,
-		std::shared_ptr<Object const> second) {
+		std::shared_ptr<Object const> const second) {
 	return Cons{first, second};
 }
 
@@ -121,7 +121,7 @@ size_t list_length(Cons const &list, size_t const accum = 0) {
 }
 
 std::shared_ptr<Object const> apply(
-		std::shared_ptr<Object const> func, Cons const &args) {
+		std::shared_ptr<Object const> const func, Cons const &args) {
 	return std::visit(
 			[&args](auto &&contained) {
 				if constexpr(requires { apply(contained, args); }) {
@@ -149,7 +149,7 @@ std::shared_ptr<Object const> eval(Cons const &list) {
 }
 
 std::shared_ptr<Object const> nth(
-		size_t const index, std::shared_ptr<Object const> list) {
+		size_t const index, std::shared_ptr<Object const> const list) {
 	return std::visit(
 			[&index](auto &&arg) {
 				if constexpr(requires { nth(index, arg); }) {
