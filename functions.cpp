@@ -122,8 +122,8 @@ size_t list_length(Cons const &list, size_t const accum = 0) {
 std::shared_ptr<Object> apply(std::shared_ptr<Object> func, Cons const &args) {
 	return std::visit(
 			[&args](auto &&contained) {
-				if constexpr(requires { nth(contained, args); }) {
-					return nth(contained, args);
+				if constexpr(requires { apply(contained, args); }) {
+					return apply(contained, args);
 				} else {
 					return std::make_shared<Object>(
 							Error{"apply() called with invalid argument type"});
@@ -134,6 +134,16 @@ std::shared_ptr<Object> apply(std::shared_ptr<Object> func, Cons const &args) {
 
 std::shared_ptr<Object> apply(BuiltinFunction const &func, Cons const &args) {
 	return func.func(args);
+}
+
+std::shared_ptr<Object> eval(Cons const &list) {
+	if(std::holds_alternative<Cons>(*cdr(list))) {
+		return apply(car(list),
+				const_cast<Cons const &>(std::get<Cons>(*cdr(list))));
+	} else {
+		return std::make_shared<Object>(
+				Error{"car of argument passed to eval() must be a cons"});
+	}
 }
 
 std::shared_ptr<Object> nth(size_t const index, std::shared_ptr<Object> list) {

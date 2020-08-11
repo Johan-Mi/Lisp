@@ -22,9 +22,9 @@ int main() {
 	auto const g = X(Function{
 			make_list(X(Symbol{"a"}), X(Symbol{"b"})), X(Integer{42})});
 
-	auto const h = BuiltinFunction{wrapped_car};
+	auto const h = X(BuiltinFunction{wrapped_car});
 
-	auto const i = apply(h, make_list(a));
+	auto const i = eval(make_list(h, a));
 
 #undef X
 

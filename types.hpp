@@ -5,19 +5,7 @@
 #include <string>
 #include <string_view>
 
-using Object = std::variant<struct Nil, struct Cons, struct Integer, struct Bit,
-		struct Symbol, struct Function, struct Error, struct BuiltinFunction>;
-
-struct BuiltinFunction {
-	std::shared_ptr<Object> (*func)(struct Cons const &);
-};
-
 struct Nil {};
-
-struct Cons {
-	std::shared_ptr<Object> first;
-	std::shared_ptr<Object> second;
-};
 
 struct Integer {
 	int value;
@@ -31,13 +19,25 @@ struct Symbol {
 	std::string name;
 };
 
+struct Error {
+	std::string message;
+};
+
+using Object = std::variant<Nil, struct Cons, Integer, Bit, Symbol,
+		struct Function, Error, struct BuiltinFunction>;
+
+struct Cons {
+	std::shared_ptr<Object> first;
+	std::shared_ptr<Object> second;
+};
+
+struct BuiltinFunction {
+	std::shared_ptr<Object> (*func)(Cons const &);
+};
+
 struct Function {
 	Cons parameters;
 	std::shared_ptr<Object> body;
-};
-
-struct Error {
-	std::string message;
 };
 
 template<class T>
