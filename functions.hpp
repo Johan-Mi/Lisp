@@ -55,6 +55,7 @@ Cons make_unterminated_list(auto const &first, auto const &second) {
 	return cons(first, second);
 }
 
+std::shared_ptr<Object> apply(std::shared_ptr<Object> func, Cons const &args);
 std::shared_ptr<Object> apply(BuiltinFunction const &func, Cons const &args);
 
 std::shared_ptr<Object> nth(size_t const index, std::shared_ptr<Object> list);

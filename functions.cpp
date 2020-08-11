@@ -119,6 +119,19 @@ size_t list_length(Cons const &list, size_t const accum = 0) {
 	}
 }
 
+std::shared_ptr<Object> apply(std::shared_ptr<Object> func, Cons const &args) {
+	return std::visit(
+			[&args](auto &&contained) {
+				if constexpr(requires { nth(contained, args); }) {
+					return nth(contained, args);
+				} else {
+					return std::make_shared<Object>(
+							Error{"apply() called with invalid argument type"});
+				}
+			},
+			*func);
+}
+
 std::shared_ptr<Object> apply(BuiltinFunction const &func, Cons const &args) {
 	return func.func(args);
 }
