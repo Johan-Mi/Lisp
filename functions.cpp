@@ -2,7 +2,7 @@
 
 std::string to_string(std::shared_ptr<Object const> const obj) {
 	return std::visit(
-			[](auto &&arg) {
+			[](auto const &arg) {
 				return to_string(arg);
 			},
 			*obj);
@@ -44,7 +44,7 @@ std::string to_string(BuiltinFunction const &obj) {
 std::string to_string_cons(
 		std::string const &accum, std::shared_ptr<Object const> const obj) {
 	return std::visit(
-			[&](auto &&arg) {
+			[&accum](auto const &arg) {
 				return to_string_cons(accum, arg);
 			},
 			*obj);
@@ -62,7 +62,7 @@ std::string to_string_cons(std::string const &accum, Cons const &obj) {
 
 std::shared_ptr<Object const> car(std::shared_ptr<Object const> const obj) {
 	return std::visit(
-			[](auto &&arg) {
+			[](auto const &arg) {
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(requires { car(arg); }) {
 					return car(arg);
@@ -85,7 +85,7 @@ std::shared_ptr<Object const> car(Nil const &obj) {
 
 std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> const obj) {
 	return std::visit(
-			[](auto &&arg) {
+			[](auto const &arg) {
 				using T = std::decay_t<decltype(arg)>;
 				if constexpr(requires { cdr(arg); }) {
 					return cdr(arg);
@@ -123,7 +123,7 @@ size_t list_length(Cons const &list, size_t const accum = 0) {
 std::shared_ptr<Object const> apply(
 		std::shared_ptr<Object const> const func, Cons const &args) {
 	return std::visit(
-			[&args](auto &&contained) {
+			[&args](auto const &contained) {
 				if constexpr(requires { apply(contained, args); }) {
 					return apply(contained, args);
 				} else {
@@ -151,7 +151,7 @@ std::shared_ptr<Object const> eval(Cons const &list) {
 std::shared_ptr<Object const> nth(
 		size_t const index, std::shared_ptr<Object const> const list) {
 	return std::visit(
-			[&index](auto &&arg) {
+			[&index](auto const &arg) {
 				if constexpr(requires { nth(index, arg); }) {
 					return nth(index, arg);
 				} else {
