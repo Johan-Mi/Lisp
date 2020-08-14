@@ -16,6 +16,7 @@ std::string to_string(Symbol const &obj);
 std::string to_string(Error const &obj);
 std::string to_string(Function const &obj);
 std::string to_string(BuiltinFunction const &obj);
+std::string to_string(Quote const &obj);
 
 template<class T>
 std::string to_string_cons(std::string const &accum, T const &obj) {
@@ -54,16 +55,17 @@ Cons make_unterminated_list(auto const &first, auto const &second) {
 	return cons(first, second);
 }
 
+std::shared_ptr<Object const> apply(std::shared_ptr<Object const> const func,
+		Cons const &args, Cons const &env);
 std::shared_ptr<Object const> apply(
-		std::shared_ptr<Object const> const func, Cons const &args);
-std::shared_ptr<Object const> apply(
-		BuiltinFunction const &func, Cons const &args);
+		BuiltinFunction const &func, Cons const &args, Cons const &env);
 
 std::shared_ptr<Object const> eval(Cons const &list, Cons const &env);
+std::shared_ptr<Object const> eval(Quote const &quote, Cons const &env);
 
 std::shared_ptr<Object const> nth(
 		size_t const index, std::shared_ptr<Object const> const list);
 std::shared_ptr<Object const> nth(size_t const index, Cons const &list);
 
-std::shared_ptr<Object const> wrapped_car(Cons const &args);
-std::shared_ptr<Object const> wrapped_cdr(Cons const &args);
+std::shared_ptr<Object const> wrapped_car(Cons const &args, Cons const &env);
+std::shared_ptr<Object const> wrapped_cdr(Cons const &args, Cons const &env);

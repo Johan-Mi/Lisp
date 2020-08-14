@@ -49,6 +49,10 @@ std::string to_string(BuiltinFunction const &obj) {
 	return "Builtin function";
 }
 
+std::string to_string(Quote const &obj) {
+	return "(quote " + to_string(obj.contained) + ')';
+}
+
 std::string to_string_cons(
 		std::string const &accum, std::shared_ptr<Object const> const obj) {
 	return std::visit(
@@ -133,43 +137,69 @@ Cons make_list() {
 	return make_nil();
 }
 
-std::shared_ptr<Object const> apply(
-		std::shared_ptr<Object const> const func, Cons const &args) {
+std::shared_ptr<Object const> apply(std::shared_ptr<Object const> const func,
+		Cons const &args, Cons const &env) {
 	return std::visit(
-			[&args](auto const &contained) {
-				if constexpr(requires { apply(contained, args); }) {
-					return apply(contained, args);
+			[&args, &env](auto const &contained) {
+				using T = std::decay_t<decltype(contained)>;
+				if constexpr(requires { apply(contained, args, env); }) {
+					return apply(contained, args, env);
 				} else {
 					return std::make_shared<Object const>(
-							Error{"apply() called with invalid argument type"});
+							Error{"apply() called with invalid argument type"
+									+ std::string(name_of_type<T>)});
 				}
 			},
 			*func);
 }
 
 std::shared_ptr<Object const> apply(
-		BuiltinFunction const &func, Cons const &args) {
-	return func.func(args);
+		BuiltinFunction const &func, Cons const &args, Cons const &env) {
+	return func.func(args, env);
+}
+
+std::shared_ptr<Object const> eval(
+		std::shared_ptr<Object const> const expr, Cons const &env) {
+	return std::visit(
+			[&env](auto const &contained) {
+				using T = std::decay_t<decltype(contained)>;
+				if constexpr(requires { eval(contained, env); }) {
+					return eval(contained, env);
+				} else {
+					return std::make_shared<Object const>(
+							Error{"eval() called with invalid argument type"
+									+ std::string(name_of_type<T>)});
+				}
+			},
+			*expr);
 }
 
 std::shared_ptr<Object const> eval(Cons const &list, Cons const &env) {
-	if(std::holds_alternative<Cons>(*cdr(list))) {
-		return apply(car(list), std::get<Cons>(*cdr(list)));
+	if(is_nil(list)) {
+		return std::make_shared<Object const>(make_nil());
+	} else if(std::holds_alternative<Cons>(*cdr(list))) {
+		return apply(car(list), std::get<Cons>(*cdr(list)), env);
 	} else {
 		return std::make_shared<Object const>(
 				Error{"car of argument passed to eval() must be a cons"});
 	}
 }
 
+std::shared_ptr<Object const> eval(Quote const &quote, Cons const &env) {
+	return quote.contained;
+}
+
 std::shared_ptr<Object const> nth(
 		size_t const index, std::shared_ptr<Object const> const list) {
 	return std::visit(
 			[&index](auto const &arg) {
+				using T = std::decay_t<decltype(arg)>;
 				if constexpr(requires { nth(index, arg); }) {
 					return nth(index, arg);
 				} else {
 					return std::make_shared<Object const>(
-							Error{"nth() called with invalid argument type"});
+							Error{"nth() called with invalid argument type"
+									+ std::string(name_of_type<T>)});
 				}
 			},
 			*list);
@@ -183,7 +213,7 @@ std::shared_ptr<Object const> nth(size_t const index, Cons const &list) {
 	}
 }
 
-std::shared_ptr<Object const> wrapped_car(Cons const &args) {
+std::shared_ptr<Object const> wrapped_car(Cons const &args, Cons const &env) {
 	size_t const num_args = list_length(args);
 
 	if(num_args != 1) {
@@ -192,10 +222,10 @@ std::shared_ptr<Object const> wrapped_car(Cons const &args) {
 						+ std::to_string(num_args)});
 	}
 
-	return car(nth(0, args));
+	return car(eval(nth(0, args), env));
 }
 
-std::shared_ptr<Object const> wrapped_cdr(Cons const &args) {
+std::shared_ptr<Object const> wrapped_cdr(Cons const &args, Cons const &env) {
 	size_t const num_args = list_length(args);
 
 	if(num_args != 1) {
@@ -204,5 +234,5 @@ std::shared_ptr<Object const> wrapped_cdr(Cons const &args) {
 						+ std::to_string(num_args)});
 	}
 
-	return cdr(nth(0, args));
+	return cdr(eval(nth(0, args), env));
 }

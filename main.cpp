@@ -26,7 +26,7 @@ int main() {
 
 	auto const h = X(BuiltinFunction{wrapped_car});
 
-	auto const i = eval(make_list(h, a), env);
+	auto const i = eval(make_list(h, X(Quote{a})), env);
 
 #undef X
 

@@ -22,7 +22,7 @@ struct Error {
 };
 
 using Object = std::variant<struct Cons, Integer, Bit, Symbol, struct Function,
-		Error, struct BuiltinFunction>;
+		Error, struct BuiltinFunction, struct Quote>;
 
 struct Cons {
 	std::shared_ptr<Object const> first;
@@ -30,12 +30,16 @@ struct Cons {
 };
 
 struct BuiltinFunction {
-	std::shared_ptr<Object const> (*func)(Cons const &);
+	std::shared_ptr<Object const> (*func)(Cons const &, Cons const &);
 };
 
 struct Function {
 	Cons parameters;
 	std::shared_ptr<Object const> body;
+};
+
+struct Quote {
+	std::shared_ptr<Object const> contained;
 };
 
 template<class T>
@@ -55,3 +59,5 @@ constexpr inline std::string_view name_of_type<Error> = "<type 'error'>";
 template<>
 constexpr inline std::string_view
 		name_of_type<BuiltinFunction> = "<type 'builtin function'>";
+template<>
+constexpr inline std::string_view name_of_type<Quote> = "<type 'quote'>";
