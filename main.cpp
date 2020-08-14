@@ -7,11 +7,13 @@
 int main() {
 #define X std::make_shared<Object const>
 
+	auto const env = X(make_list());
+
 	auto const a = X(make_list(X(Integer{1}), X(Integer{2})));
 
-	auto const b = X(make_list(X(Nil{})));
+	auto const b = X(make_list(X(make_nil())));
 
-	auto const c = X(Nil{});
+	auto const c = X(make_nil());
 
 	auto const d = X(make_unterminated_list(X(Integer{1}), X(Integer{2})));
 
@@ -24,17 +26,17 @@ int main() {
 
 	auto const h = X(BuiltinFunction{wrapped_car});
 
-	auto const i = eval(make_list(h, a));
+	auto const i = eval(make_list(h, a), env);
 
 #undef X
 
 	std::cout << to_string(a) << '\n'; // (1 2)
 	std::cout << to_string(car(a)) << '\n'; // 1
 	std::cout << to_string(cdr(a)) << '\n'; // (2)
-	std::cout << to_string(cdr(cdr(a))) << '\n'; // nil
-	std::cout << to_string(cdr(cdr(cdr(a)))) << '\n'; // nil
-	std::cout << to_string(b) << '\n'; // (nil)
-	std::cout << to_string(c) << '\n'; // nil
+	std::cout << to_string(cdr(cdr(a))) << '\n'; // ()
+	std::cout << to_string(cdr(cdr(cdr(a)))) << '\n'; // ()
+	std::cout << to_string(b) << '\n'; // (())
+	std::cout << to_string(c) << '\n'; // ()
 	std::cout << to_string(d) << '\n'; // (1 . 2)
 	std::cout << to_string(e) << '\n'; // (1 . 0)
 	std::cout << to_string(f) << '\n'; // foo

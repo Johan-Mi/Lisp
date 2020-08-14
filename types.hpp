@@ -5,8 +5,6 @@
 #include <string>
 #include <string_view>
 
-struct Nil {};
-
 struct Integer {
 	int value;
 };
@@ -23,7 +21,7 @@ struct Error {
 	std::string message;
 };
 
-using Object = std::variant<Nil, struct Cons, Integer, Bit, Symbol,
+using Object = std::variant<struct Cons, Integer, Bit, Symbol,
 		struct Function, Error, struct BuiltinFunction>;
 
 struct Cons {
@@ -57,5 +55,3 @@ constexpr inline std::string_view name_of_type<Error> = "<type 'error'>";
 template<>
 constexpr inline std::string_view
 		name_of_type<BuiltinFunction> = "<type 'builtin function'>";
-template<>
-constexpr inline std::string_view name_of_type<Nil> = name_of_type<Cons>;

@@ -1,5 +1,13 @@
 #include "functions.hpp"
 
+Cons make_nil() {
+	return {nullptr, nullptr};
+}
+
+bool is_nil(Cons const &obj) {
+	return !obj.first;
+}
+
 std::string to_string(std::shared_ptr<Object const> const obj) {
 	return std::visit(
 			[](auto const &arg) {
@@ -8,12 +16,12 @@ std::string to_string(std::shared_ptr<Object const> const obj) {
 			*obj);
 }
 
-std::string to_string(Nil const &obj) {
-	return "nil";
-}
-
 std::string to_string(Cons const &obj) {
-	return to_string_cons('(' + to_string(obj.first), obj.second);
+	if(is_nil(obj)) {
+		return "()";
+	} else {
+		return to_string_cons('(' + to_string(car(obj)), cdr(obj));
+	}
 }
 
 std::string to_string(Integer const &obj) {
@@ -51,13 +59,12 @@ std::string to_string_cons(
 }
 
 template<>
-std::string to_string_cons(std::string const &accum, Nil const &obj) {
-	return accum + ')';
-}
-
-template<>
 std::string to_string_cons(std::string const &accum, Cons const &obj) {
-	return to_string_cons(accum + ' ' + to_string(obj.first), obj.second);
+	if(is_nil(obj)) {
+		return accum + ')';
+	} else {
+		return to_string_cons(accum + ' ' + to_string(car(obj)), cdr(obj));
+	}
 }
 
 std::shared_ptr<Object const> car(std::shared_ptr<Object const> const obj) {
@@ -76,11 +83,11 @@ std::shared_ptr<Object const> car(std::shared_ptr<Object const> const obj) {
 }
 
 std::shared_ptr<Object const> car(Cons const &obj) {
-	return obj.first;
-}
-
-std::shared_ptr<Object const> car(Nil const &obj) {
-	return std::make_shared<Object const>(Nil{});
+	if(obj.first) {
+		return obj.first;
+	} else {
+		return std::make_shared<Object const>(make_nil());
+	}
 }
 
 std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> const obj) {
@@ -99,11 +106,11 @@ std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> const obj) {
 }
 
 std::shared_ptr<Object const> cdr(Cons const &obj) {
-	return obj.second;
-}
-
-std::shared_ptr<Object const> cdr(Nil const &obj) {
-	return std::make_shared<Object const>(Nil{});
+	if(obj.second) {
+		return obj.second;
+	} else {
+		return std::make_shared<Object const>(make_nil());
+	}
 }
 
 Cons cons(std::shared_ptr<Object const> first,
@@ -112,12 +119,18 @@ Cons cons(std::shared_ptr<Object const> first,
 }
 
 size_t list_length(Cons const &list, size_t const accum = 0) {
-	if(std::holds_alternative<Cons>(*cdr(list))) {
+	if(is_nil(list)) {
+		return accum;
+	} else if(std::holds_alternative<Cons>(*cdr(list))) {
 		return list_length(std::get<Cons>(*cdr(list)), accum + 1);
 	} else {
 		return accum + 1;
 		// TODO Warn if cdr is not nil?
 	}
+}
+
+Cons make_list() {
+	return make_nil();
 }
 
 std::shared_ptr<Object const> apply(
@@ -139,7 +152,8 @@ std::shared_ptr<Object const> apply(
 	return func.func(args);
 }
 
-std::shared_ptr<Object const> eval(Cons const &list) {
+std::shared_ptr<Object const> eval(
+		Cons const &list, std::shared_ptr<Object const> const env) {
 	if(std::holds_alternative<Cons>(*cdr(list))) {
 		return apply(car(list), std::get<Cons>(*cdr(list)));
 	} else {
@@ -168,10 +182,6 @@ std::shared_ptr<Object const> nth(size_t const index, Cons const &list) {
 	} else {
 		return nth(index - 1, cdr(list));
 	}
-}
-
-std::shared_ptr<Object const> nth(size_t const index, Nil const &list) {
-	return std::make_shared<Object const>(Nil{});
 }
 
 std::shared_ptr<Object const> wrapped_car(Cons const &args) {
