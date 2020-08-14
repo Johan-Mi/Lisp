@@ -59,8 +59,7 @@ std::shared_ptr<Object const> apply(
 std::shared_ptr<Object const> apply(
 		BuiltinFunction const &func, Cons const &args);
 
-std::shared_ptr<Object const> eval(
-		Cons const &list, std::shared_ptr<Object const> const env);
+std::shared_ptr<Object const> eval(Cons const &list, Cons const &env);
 
 std::shared_ptr<Object const> nth(
 		size_t const index, std::shared_ptr<Object const> const list);

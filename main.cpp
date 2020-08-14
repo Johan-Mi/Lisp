@@ -7,7 +7,7 @@
 int main() {
 #define X std::make_shared<Object const>
 
-	auto const env = X(make_list());
+	auto const env = make_list();
 
 	auto const a = X(make_list(X(Integer{1}), X(Integer{2})));
 

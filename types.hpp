@@ -21,8 +21,8 @@ struct Error {
 	std::string message;
 };
 
-using Object = std::variant<struct Cons, Integer, Bit, Symbol,
-		struct Function, Error, struct BuiltinFunction>;
+using Object = std::variant<struct Cons, Integer, Bit, Symbol, struct Function,
+		Error, struct BuiltinFunction>;
 
 struct Cons {
 	std::shared_ptr<Object const> first;

@@ -152,8 +152,7 @@ std::shared_ptr<Object const> apply(
 	return func.func(args);
 }
 
-std::shared_ptr<Object const> eval(
-		Cons const &list, std::shared_ptr<Object const> const env) {
+std::shared_ptr<Object const> eval(Cons const &list, Cons const &env) {
 	if(std::holds_alternative<Cons>(*cdr(list))) {
 		return apply(car(list), std::get<Cons>(*cdr(list)));
 	} else {
