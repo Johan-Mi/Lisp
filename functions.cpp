@@ -189,30 +189,6 @@ std::shared_ptr<Object const> eval(Quote const &quote, Cons const &env) {
 	return quote.contained;
 }
 
-std::shared_ptr<Object const> nth(
-		size_t const index, std::shared_ptr<Object const> const list) {
-	return std::visit(
-			[&index](auto const &arg) {
-				using T = std::decay_t<decltype(arg)>;
-				if constexpr(requires { nth(index, arg); }) {
-					return nth(index, arg);
-				} else {
-					return std::make_shared<Object const>(
-							Error{"nth() called with invalid argument type"
-									+ std::string(name_of_type<T>)});
-				}
-			},
-			*list);
-}
-
-std::shared_ptr<Object const> nth(size_t const index, Cons const &list) {
-	if(index == 0) {
-		return car(list);
-	} else {
-		return nth(index - 1, cdr(list));
-	}
-}
-
 std::shared_ptr<Object const> wrapped_car(Cons const &args, Cons const &env) {
 	size_t const num_args = list_length(args);
 
@@ -222,7 +198,7 @@ std::shared_ptr<Object const> wrapped_car(Cons const &args, Cons const &env) {
 						+ std::to_string(num_args)});
 	}
 
-	return car(eval(nth(0, args), env));
+	return car(eval(car(args), env));
 }
 
 std::shared_ptr<Object const> wrapped_cdr(Cons const &args, Cons const &env) {
@@ -234,5 +210,5 @@ std::shared_ptr<Object const> wrapped_cdr(Cons const &args, Cons const &env) {
 						+ std::to_string(num_args)});
 	}
 
-	return cdr(eval(nth(0, args), env));
+	return cdr(eval(car(args), env));
 }
