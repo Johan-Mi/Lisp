@@ -3,6 +3,7 @@
 
 #include "types.hpp"
 #include "functions.hpp"
+#include "to-string.hpp"
 
 int main() {
 #define X std::make_shared<Object const>
