@@ -5,7 +5,6 @@
 std::string to_string(std::shared_ptr<Object const> const obj);
 std::string to_string(Cons const &obj);
 std::string to_string(Integer const &obj);
-std::string to_string(Bit const &obj);
 std::string to_string(Symbol const &obj);
 std::string to_string(Error const &obj);
 std::string to_string(Function const &obj);

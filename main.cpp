@@ -18,8 +18,6 @@ int main() {
 
 	auto const d = X(make_unterminated_list(X(Integer{1}), X(Integer{2})));
 
-	auto const e = X(make_unterminated_list(X(Bit{1}), X(Bit{0})));
-
 	auto const f = X(Symbol{"foo"});
 
 	auto const g = X(Function{
@@ -37,7 +35,6 @@ int main() {
 	std::cout << to_string(b) << '\n'; // (())
 	std::cout << to_string(c) << '\n'; // ()
 	std::cout << to_string(d) << '\n'; // (1 . 2)
-	std::cout << to_string(e) << '\n'; // (1 . 0)
 	std::cout << to_string(f) << '\n'; // foo
 	std::cout << to_string(eval(f, env)) << '\n'; // Error
 	std::cout << to_string(car(f)) << '\n'; // Error

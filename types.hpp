@@ -9,10 +9,6 @@ struct Integer {
 	int value;
 };
 
-struct Bit {
-	bool value;
-};
-
 struct Symbol {
 	std::string name;
 
@@ -23,7 +19,7 @@ struct Error {
 	std::string message;
 };
 
-using Object = std::variant<struct Cons, Integer, Bit, Symbol, struct Function,
+using Object = std::variant<struct Cons, Integer, Symbol, struct Function,
 		Error, struct BuiltinFunction, struct Quote>;
 
 struct Cons {
@@ -50,8 +46,6 @@ template<>
 constexpr inline std::string_view name_of_type<Cons> = "<type 'cons'>";
 template<>
 constexpr inline std::string_view name_of_type<Integer> = "<type 'integer'>";
-template<>
-constexpr inline std::string_view name_of_type<Bit> = "<type 'bit'>";
 template<>
 constexpr inline std::string_view name_of_type<Symbol> = "<type 'symbol'>";
 template<>
