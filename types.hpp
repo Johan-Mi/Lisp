@@ -15,6 +15,8 @@ struct Bit {
 
 struct Symbol {
 	std::string name;
+
+	bool operator<=>(Symbol const &other) const = default;
 };
 
 struct Error {

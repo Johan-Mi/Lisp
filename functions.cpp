@@ -1,4 +1,5 @@
 #include "functions.hpp"
+#include "to-string.hpp"
 
 Cons make_nil() {
 	return {nullptr, nullptr};
@@ -74,6 +75,34 @@ Cons make_list() {
 	return make_nil();
 }
 
+Cons join_two_lists(std::shared_ptr<Object const> const first,
+		std::shared_ptr<Object const> const second, Cons const &last) {
+	return std::visit(
+			[&last](auto const &first_contained, auto const &second_contained) {
+				if constexpr(requires {
+								 join_two_lists(first_contained,
+										 second_contained, last);
+							 }) {
+					return join_two_lists(
+							first_contained, second_contained, last);
+				} else {
+					return last;
+				}
+			},
+			*first, *second);
+}
+
+Cons join_two_lists(Cons const &first, Cons const &second, Cons const &last) {
+	if(is_nil(first) || is_nil(second)) {
+		return last;
+	} else {
+		return cons(
+				std::make_shared<Object const>(cons(car(first), car(second))),
+				std::make_shared<Object const>(
+						join_two_lists(cdr(first), cdr(second), last)));
+	}
+}
+
 std::shared_ptr<Object const> apply(std::shared_ptr<Object const> const func,
 		Cons const &args, Cons const &env) {
 	return std::visit(
@@ -95,6 +124,11 @@ std::shared_ptr<Object const> apply(
 	return func.func(args, env);
 }
 
+std::shared_ptr<Object const> apply(
+		Function const &func, Cons const &args, Cons const &env) {
+	return eval(func.body, join_two_lists(func.parameters, args, env));
+}
+
 std::shared_ptr<Object const> eval(
 		std::shared_ptr<Object const> const expr, Cons const &env) {
 	return std::visit(
@@ -104,7 +138,7 @@ std::shared_ptr<Object const> eval(
 					return eval(contained, env);
 				} else {
 					return std::make_shared<Object const>(
-							Error{"eval() called with invalid argument type"
+							Error{"eval() called with invalid argument type "
 									+ std::string(name_of_type<T>)});
 				}
 			},
@@ -124,6 +158,21 @@ std::shared_ptr<Object const> eval(Cons const &list, Cons const &env) {
 
 std::shared_ptr<Object const> eval(Quote const &quote, Cons const &env) {
 	return quote.contained;
+}
+
+std::shared_ptr<Object const> eval(Symbol const &symbol, Cons const &env) {
+	if(is_nil(env)) {
+		return std::make_shared<Object const>(
+				Error{"Unbound variable " + to_string(symbol)});
+	} else if(std::holds_alternative<Symbol>(*car(car(env)))
+			&& std::get<Symbol>(*car(car(env))) == symbol) {
+		return cdr(car(env));
+	} else if(std::holds_alternative<Cons>(*cdr(env))) {
+		return eval(symbol, std::get<Cons>(*cdr(env)));
+	} else {
+		return std::make_shared<Object const>(
+				Error{"Unbound variable " + to_string(symbol)});
+	}
 }
 
 std::shared_ptr<Object const> wrapped_car(Cons const &args, Cons const &env) {
