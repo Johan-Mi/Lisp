@@ -55,7 +55,7 @@ std::shared_ptr<Object const> cdr(Cons const &obj) {
 	}
 }
 
-Cons cons(std::shared_ptr<Object const> first,
+Cons cons(std::shared_ptr<Object const> const first,
 		std::shared_ptr<Object const> const second) {
 	return Cons{first, second};
 }
