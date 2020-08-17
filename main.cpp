@@ -4,9 +4,11 @@
 #include "types.hpp"
 #include "functions.hpp"
 #include "to-string.hpp"
+#include "lexer.hpp"
 #include "parser.hpp"
 
 int main() {
+
 #define X std::make_shared<Object const>
 
 	auto const env = make_list();
