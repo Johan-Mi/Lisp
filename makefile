@@ -3,9 +3,9 @@ CPPFLAGS = -O3 -Wall -std=c++20
 # CPPFLAGS = -g -Wall -std=c++20
 
 main: main.o functions.o to-string.o parser.o
-	${CC} ${CPPFLAGS} -o main main.o functions.o to-string.o
+	${CC} ${CPPFLAGS} -o main main.o functions.o to-string.o parser.o
 
-main.o: main.cpp types.hpp functions.hpp to-string.hpp
+main.o: main.cpp types.hpp functions.hpp to-string.hpp parser.hpp
 	${CC} ${CPPFLAGS} -c main.cpp
 
 functions.o: functions.cpp functions.hpp types.hpp

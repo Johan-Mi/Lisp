@@ -4,24 +4,28 @@
 #include "types.hpp"
 #include "functions.hpp"
 #include "to-string.hpp"
+#include "parser.hpp"
 
 int main() {
 #define X std::make_shared<Object const>
 
 	auto const env = make_list();
 
-	auto const a = X(make_list(X(Integer{1}), X(Integer{2})));
+	auto const a = X(make_list(X(std::get<0>(*parse_integer("1"))),
+			X(std::get<0>(*parse_integer("2")))));
 
 	auto const b = X(make_list(X(make_nil())));
 
 	auto const c = X(make_nil());
 
-	auto const d = X(make_unterminated_list(X(Integer{1}), X(Integer{2})));
+	auto const d = X(make_unterminated_list(X(std::get<0>(*parse_integer("1"))),
+			X(std::get<0>(*parse_integer("2")))));
 
-	auto const f = X(Symbol{"foo"});
+	auto const f = X(std::get<0>(*parse_symbol("foo")));
 
-	auto const g = X(Function{
-			make_list(X(Symbol{"a"}), X(Symbol{"b"})), X(Symbol{"a"})});
+	auto const g = X(Function{make_list(X(std::get<0>(*parse_symbol("a"))),
+									  X(std::get<0>(*parse_symbol("b")))),
+			X(std::get<0>(*parse_symbol("a")))});
 
 	auto const h = X(BuiltinFunction{wrapped_car});
 
