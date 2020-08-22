@@ -15,6 +15,10 @@ std::optional<std::tuple<Symbol, std::string_view>> parse_symbol(
 	auto start = cbegin(sv);
 
 	while(true) {
+		if(sv.empty()) {
+			state = state == 1 ? 3 : 2;
+		}
+
 		switch(state) {
 			case 0:
 				if(char_is_symbol_initial(sv[0])) {
@@ -37,10 +41,6 @@ std::optional<std::tuple<Symbol, std::string_view>> parse_symbol(
 				return std::nullopt;
 			case 3:
 				return {{{std::string(start, begin(sv))}, sv}};
-		}
-
-		if(sv.empty()) {
-			state = state == 1 ? 3 : 2;
 		}
 	}
 }
