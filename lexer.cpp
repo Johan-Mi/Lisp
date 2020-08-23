@@ -44,7 +44,8 @@ std::vector<Token> lex(std::string_view sv) {
 				}
 				break;
 			default:
-				current_token.str += sv[0];
+				current_token.str += sv[0]; // TODO Only modify str once, maybe
+											// use a string_view?
 				current_token.type = TokenType::Ident;
 		}
 		sv.remove_prefix(1);

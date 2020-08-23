@@ -25,19 +25,6 @@ constexpr bool char_is_digit(char const c) {
 	return c >= '0' && c <= '9';
 }
 
-constexpr bool char_is_delimiter(char const c) {
-	switch(c) {
-		case ' ':
-		case '\n':
-		case '\t':
-		case '\'':
-		case '(':
-		case ')':
-			return true;
-	}
-	return false;
-}
-
 constexpr bool char_is_symbol_initial(char const c) {
 	// symbol_initial: /[a-zA-Z!$%&*/:<=>?^_~]/
 
