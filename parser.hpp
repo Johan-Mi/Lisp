@@ -1,9 +1,13 @@
 #pragma once
 
 #include "types.hpp"
+#include "lexer.hpp"
 #include <string_view>
 #include <optional>
 #include <tuple>
+#include <vector>
+
+using TokenIter = std::vector<Token>::const_iterator;
 
 constexpr bool char_is_letter(char const c) {
 	// letter: /[a-zA-Z]/
@@ -78,59 +82,37 @@ constexpr bool char_is_symbol_subsequent(char const c) {
 	return false;
 }
 
-void munch(std::string_view &sv);
-
-constexpr std::optional<std::tuple<Integer, std::string_view>> parse_integer(
-		std::string_view sv) {
+constexpr std::optional<std::tuple<Integer, TokenIter>> parse_integer(
+		TokenIter begin, TokenIter end) {
 	// integer : /-?[0-9]+/
 
-	std::uint_fast8_t state = 0;
+	if(begin == end || begin->type != TokenType::Ident || begin->str.empty()) {
+		return std::nullopt;
+	}
+
+	std::string_view sv = begin->str;
 
 	int num = 0;
-	bool negative = false;
+	bool negative;
 
-	while(true) {
-		switch(state) {
-			case 0:
-				if(sv[0] == '-') {
-					sv.remove_prefix(1);
-					negative = true;
-				}
-				state = 1;
-				break;
-			case 1:
-				if(char_is_digit(sv[0])) {
-					num = sv[0] - '0';
-					sv.remove_prefix(1);
-					state = 2;
-				} else {
-					state = 3;
-				}
-				break;
-			case 2:
-				if(char_is_digit(sv[0])) {
-					num = num * 10 + (sv[0] - '0');
-					sv.remove_prefix(1);
-				} else if(char_is_delimiter(sv[0])) {
-					state = 4;
-				} else {
-					state = 3;
-				}
-				break;
-			case 3:
-				return std::nullopt;
-			case 4:
-				if(negative) {
-					num *= -1;
-				}
-				return {{{num}, sv}};
-		}
-
-		if(sv.empty()) {
-			state = state == 2 ? 4 : 3;
+	if((negative = sv[0] == '-')) {
+		if(sv.size() >= 2) {
+			sv.remove_prefix(1);
+		} else {
+			return std::nullopt;
 		}
 	}
+
+	for(char const c : sv) {
+		if(char_is_digit(c)) {
+			num = num * 10 + (c - '0');
+		} else {
+			return std::nullopt;
+		}
+	}
+
+	return {{{negative ? -num : num}, begin + 1}};
 }
 
-std::optional<std::tuple<Symbol, std::string_view>> parse_symbol(
-		std::string_view sv);
+std::optional<std::tuple<Symbol, TokenIter>> parse_symbol(
+		TokenIter begin, TokenIter end);
