@@ -25,10 +25,10 @@ std::shared_ptr<Object const> car(std::shared_ptr<Object const> const obj) {
 }
 
 std::shared_ptr<Object const> car(Cons const &obj) {
-	if(obj.first) {
-		return obj.first;
-	} else {
+	if(is_nil(obj)) {
 		return std::make_shared<Object const>(make_nil());
+	} else {
+		return obj.first;
 	}
 }
 
@@ -48,10 +48,10 @@ std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> const obj) {
 }
 
 std::shared_ptr<Object const> cdr(Cons const &obj) {
-	if(obj.second) {
-		return obj.second;
-	} else {
+	if(is_nil(obj)) {
 		return std::make_shared<Object const>(make_nil());
+	} else {
+		return obj.second;
 	}
 }
 
