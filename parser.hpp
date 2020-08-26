@@ -103,3 +103,21 @@ constexpr std::optional<std::tuple<Integer, TokenIter>> parse_integer(
 
 std::optional<std::tuple<Symbol, TokenIter>> parse_symbol(
 		TokenIter begin, TokenIter end);
+
+constexpr std::optional<TokenIter> parse_lparen(
+		TokenIter begin, TokenIter end) {
+	if(begin != end && begin->type == TokenType::LParen) {
+		return {begin + 1};
+	} else {
+		return std::nullopt;
+	}
+}
+
+constexpr std::optional<TokenIter> parse_rparen(
+		TokenIter begin, TokenIter end) {
+	if(begin != end && begin->type == TokenType::RParen) {
+		return {begin + 1};
+	} else {
+		return std::nullopt;
+	}
+}
