@@ -10,6 +10,10 @@ bool is_nil(Cons const &obj) {
 }
 
 std::shared_ptr<Object const> car(std::shared_ptr<Object const> const obj) {
+	if(std::holds_alternative<Error>(*obj)) {
+		return obj;
+	}
+
 	return std::visit(
 			[](auto const &arg) {
 				using T = std::decay_t<decltype(arg)>;
@@ -33,6 +37,10 @@ std::shared_ptr<Object const> car(Cons const &obj) {
 }
 
 std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> const obj) {
+	if(std::holds_alternative<Error>(*obj)) {
+		return obj;
+	}
+
 	return std::visit(
 			[](auto const &arg) {
 				using T = std::decay_t<decltype(arg)>;
@@ -105,6 +113,10 @@ Cons join_two_lists(Cons const &first, Cons const &second, Cons const &last) {
 
 std::shared_ptr<Object const> apply(std::shared_ptr<Object const> const func,
 		Cons const &args, Cons const &env) {
+	if(std::holds_alternative<Error>(*func)) {
+		return func;
+	}
+
 	return std::visit(
 			[&args, &env](auto const &contained) {
 				using T = std::decay_t<decltype(contained)>;
@@ -112,7 +124,7 @@ std::shared_ptr<Object const> apply(std::shared_ptr<Object const> const func,
 					return apply(contained, args, env);
 				} else {
 					return std::make_shared<Object const>(
-							Error{"apply() called with invalid argument type"
+							Error{"apply() called with invalid argument type "
 									+ std::string(name_of_type<T>)});
 				}
 			},
@@ -131,6 +143,10 @@ std::shared_ptr<Object const> apply(
 
 std::shared_ptr<Object const> eval(
 		std::shared_ptr<Object const> const expr, Cons const &env) {
+	if(std::holds_alternative<Error>(*expr)) {
+		return expr;
+	}
+
 	return std::visit(
 			[&env](auto const &contained) {
 				using T = std::decay_t<decltype(contained)>;
@@ -149,7 +165,7 @@ std::shared_ptr<Object const> eval(Cons const &list, Cons const &env) {
 	if(is_nil(list)) {
 		return std::make_shared<Object const>(make_nil());
 	} else if(std::holds_alternative<Cons>(*cdr(list))) {
-		return apply(car(list), std::get<Cons>(*cdr(list)), env);
+		return apply(eval(car(list), env), std::get<Cons>(*cdr(list)), env);
 	} else {
 		return std::make_shared<Object const>(
 				Error{"car of argument passed to eval(cons) must be a cons"});
@@ -175,6 +191,10 @@ std::shared_ptr<Object const> eval(Symbol const &symbol, Cons const &env) {
 	}
 }
 
+std::shared_ptr<Object const> eval(Integer const &integer, Cons const &env) {
+	return std::make_shared<Object const>(integer);
+}
+
 std::shared_ptr<Object const> wrapped_car(Cons const &args, Cons const &env) {
 	size_t const num_args = list_length(args);
 
@@ -197,4 +217,16 @@ std::shared_ptr<Object const> wrapped_cdr(Cons const &args, Cons const &env) {
 	}
 
 	return cdr(eval(car(args), env));
+}
+
+std::shared_ptr<Object const> wrapped_quote(Cons const &args, Cons const &env) {
+	size_t const num_args = list_length(args);
+
+	if(num_args != 1) {
+		return std::make_shared<Object const>(
+				Error{"wrapped_quote() expected 1 argument but got "
+						+ std::to_string(num_args)});
+	}
+
+	return car(args);
 }

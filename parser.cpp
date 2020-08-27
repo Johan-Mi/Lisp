@@ -21,39 +21,51 @@ std::optional<std::tuple<Symbol, TokenIter>> parse_symbol(
 	}
 }
 
+std::optional<std::tuple<Quote, TokenIter>> parse_quoted_expression(
+		TokenIter begin, TokenIter end) {
+	if(auto const a = parse_quote(begin, end); a) {
+		if(auto const b = parse_expression(*a, end); b) {
+			return {{Quote{std::get<std::shared_ptr<Object const>>(*b)},
+					std::get<TokenIter>(*b)}};
+		}
+	}
+
+	return std::nullopt;
+}
+
 std::optional<std::tuple<Cons, TokenIter>> parse_cons(
 		TokenIter begin, TokenIter end) {
 	// TODO Dotted lists
 	if(auto const a = parse_lparen(begin, end); a) {
-		begin = *a;
+		return parse_cons_helper(*a, end);
 	} else {
 		return std::nullopt;
 	}
+}
 
-	Cons ret = make_nil();
-	Cons *tail = &ret;
-
-	while(true) {
-		if(auto const a = parse_expression(begin, end); a) {
-			begin = std::get<TokenIter>(*a);
-			tail->first = std::get<std::shared_ptr<Object const>>(*a);
-			tail->second = std::make_shared<Object const>(make_nil());
-			tail = const_cast<Cons *>(std::get_if<Cons>(tail->second.get()));
-			// TODO Use recursion instead of mutation, since these values aren't
-			// supposed to even be mutable
-		} else if(auto const a = parse_rparen(begin, end); a) {
-			begin = *a;
-			return {{ret, begin}};
-		} else {
-			return std::nullopt;
+std::optional<std::tuple<Cons, TokenIter>> parse_cons_helper(
+		TokenIter begin, TokenIter end) {
+	if(auto const a = parse_rparen(begin, end); a) {
+		return {{make_nil(), *a}};
+	} else if(auto const a = parse_expression(begin, end); a) {
+		if(auto const b = parse_cons_helper(std::get<TokenIter>(*a), end); b) {
+			return {{cons(std::get<std::shared_ptr<Object const>>(*a),
+							 std::make_shared<Object const>(
+									 std::get<Cons>(*b))),
+					std::get<TokenIter>(*b)}};
 		}
 	}
+
+	return std::nullopt;
 }
 
 std::optional<std::tuple<std::shared_ptr<Object const>, TokenIter>>
 parse_expression(TokenIter begin, TokenIter end) {
 	if(auto const a = parse_cons(begin, end); a) {
 		return {{std::make_shared<Object const>(std::get<Cons>(*a)),
+				std::get<TokenIter>(*a)}};
+	} else if(auto const a = parse_quoted_expression(begin, end); a) {
+		return {{std::make_shared<Object const>(std::get<Quote>(*a)),
 				std::get<TokenIter>(*a)}};
 	} else if(auto const a = parse_integer(begin, end); a) {
 		return {{std::make_shared<Object const>(std::get<Integer>(*a)),

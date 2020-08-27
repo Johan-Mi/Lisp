@@ -122,7 +122,21 @@ constexpr std::optional<TokenIter> parse_rparen(
 	}
 }
 
+constexpr std::optional<TokenIter> parse_quote(TokenIter begin, TokenIter end) {
+	if(begin != end && begin->type == TokenType::Quote) {
+		return {begin + 1};
+	} else {
+		return std::nullopt;
+	}
+}
+
+std::optional<std::tuple<Quote, TokenIter>> parse_quoted_expression(
+		TokenIter begin, TokenIter end);
+
 std::optional<std::tuple<Cons, TokenIter>> parse_cons(
+		TokenIter begin, TokenIter end);
+
+std::optional<std::tuple<Cons, TokenIter>> parse_cons_helper(
 		TokenIter begin, TokenIter end);
 
 std::optional<std::tuple<std::shared_ptr<Object const>, TokenIter>>

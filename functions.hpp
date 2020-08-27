@@ -51,6 +51,8 @@ std::shared_ptr<Object const> eval(
 std::shared_ptr<Object const> eval(Cons const &list, Cons const &env);
 std::shared_ptr<Object const> eval(Quote const &quote, Cons const &env);
 std::shared_ptr<Object const> eval(Symbol const &symbol, Cons const &env);
+std::shared_ptr<Object const> eval(Integer const &integer, Cons const &env);
 
 std::shared_ptr<Object const> wrapped_car(Cons const &args, Cons const &env);
 std::shared_ptr<Object const> wrapped_cdr(Cons const &args, Cons const &env);
+std::shared_ptr<Object const> wrapped_quote(Cons const &args, Cons const &env);
