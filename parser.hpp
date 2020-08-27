@@ -121,3 +121,9 @@ constexpr std::optional<TokenIter> parse_rparen(
 		return std::nullopt;
 	}
 }
+
+std::optional<std::tuple<Cons, TokenIter>> parse_cons(
+		TokenIter begin, TokenIter end);
+
+std::optional<std::tuple<std::shared_ptr<Object const>, TokenIter>>
+parse_expression(TokenIter begin, TokenIter end);
