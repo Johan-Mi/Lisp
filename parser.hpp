@@ -130,6 +130,14 @@ constexpr std::optional<TokenIter> parse_quote(TokenIter begin, TokenIter end) {
 	}
 }
 
+constexpr std::optional<TokenIter> parse_dot(TokenIter begin, TokenIter end) {
+	if(begin != end && begin->type == TokenType::Ident && begin->str == ".") {
+		return {begin + 1};
+	} else {
+		return std::nullopt;
+	}
+}
+
 std::optional<std::tuple<Quote, TokenIter>> parse_quoted_expression(
 		TokenIter begin, TokenIter end);
 

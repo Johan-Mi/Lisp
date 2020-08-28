@@ -35,7 +35,6 @@ std::optional<std::tuple<Quote, TokenIter>> parse_quoted_expression(
 
 std::optional<std::tuple<Cons, TokenIter>> parse_cons(
 		TokenIter begin, TokenIter end) {
-	// TODO Dotted lists
 	if(auto const a = parse_lparen(begin, end); a) {
 		return parse_cons_helper(*a, end);
 	} else {
@@ -48,7 +47,19 @@ std::optional<std::tuple<Cons, TokenIter>> parse_cons_helper(
 	if(auto const a = parse_rparen(begin, end); a) {
 		return {{make_nil(), *a}};
 	} else if(auto const a = parse_expression(begin, end); a) {
-		if(auto const b = parse_cons_helper(std::get<TokenIter>(*a), end); b) {
+		if(auto const b = parse_dot(std::get<TokenIter>(*a), end); b) {
+			if(auto const c = parse_expression(*b, end); c) {
+				if(auto const d = parse_rparen(std::get<TokenIter>(*c), end);
+						d) {
+					return {{cons(std::get<std::shared_ptr<Object const>>(*a),
+									 std::get<std::shared_ptr<Object const>>(
+											 *c)),
+							*d}};
+				}
+			}
+		} else if(auto const b
+				  = parse_cons_helper(std::get<TokenIter>(*a), end);
+				  b) {
 			return {{cons(std::get<std::shared_ptr<Object const>>(*a),
 							 std::make_shared<Object const>(
 									 std::get<Cons>(*b))),

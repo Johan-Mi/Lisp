@@ -23,13 +23,17 @@ int main() {
 #define X std::make_shared<Object const>
 	auto const env = make_list(
 			X(cons(X(Symbol{"car"}), X(BuiltinFunction{wrapped_car}))),
-			X(cons(X(Symbol{"cdr"}), X(BuiltinFunction{wrapped_cdr}))));
+			X(cons(X(Symbol{"cdr"}), X(BuiltinFunction{wrapped_cdr}))),
+			X(cons(X(Symbol{"quote"}), X(BuiltinFunction{wrapped_quote}))));
 #undef X
 
 	eval_print("42", env);
 	eval_print("()", env);
 	eval_print("'()", env);
+	eval_print("(quote (1 2 3 4 5))", env);
 	eval_print("(car '(4 9 16))", env);
+	eval_print("(cdr '(abc def))", env);
+	eval_print("(cdr '(abc . def))", env);
 
 	return EXIT_SUCCESS;
 }
