@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <compare>
 
 struct Integer {
 	int value;
@@ -12,7 +13,7 @@ struct Integer {
 struct Symbol {
 	std::string name;
 
-	bool operator<=>(Symbol const &other) const = default;
+	auto operator<=>(Symbol const &other) const = default;
 };
 
 struct Error {
