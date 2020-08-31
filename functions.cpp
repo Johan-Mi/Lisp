@@ -48,7 +48,7 @@ std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> const obj) {
 					return cdr(arg);
 				} else {
 					return std::make_shared<Object const>(
-							Error{"car() called with invalid argument type "
+							Error{"cdr() called with invalid argument type "
 									+ std::string(name_of_type<T>)});
 				}
 			},
