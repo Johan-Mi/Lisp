@@ -63,6 +63,35 @@ std::shared_ptr<Object const> cdr(Cons const &obj) {
 	}
 }
 
+std::shared_ptr<Object const> add(std::shared_ptr<Object const> const lhs,
+		std::shared_ptr<Object const> const rhs) {
+	if(std::holds_alternative<Error>(*lhs)) {
+		return lhs;
+	}
+	if(std::holds_alternative<Error>(*rhs)) {
+		return rhs;
+	}
+
+	return std::visit(
+			[](auto const &lhs_contained, auto const &rhs_contained) {
+				using T1 = std::decay_t<decltype(lhs_contained)>;
+				using T2 = std::decay_t<decltype(rhs_contained)>;
+				if constexpr(requires { add(lhs_contained, rhs_contained); }) {
+					return add(lhs_contained, rhs_contained);
+				} else {
+					return std::make_shared<Object const>(
+							Error{"add() called with invalid argument types "
+									+ std::string(name_of_type<T1>) + " and "
+									+ std::string(name_of_type<T2>)});
+				}
+			},
+			*lhs, *rhs);
+}
+
+std::shared_ptr<Object const> add(Integer const &lhs, Integer const &rhs) {
+	return std::make_shared<Object const>(Integer{lhs.value + rhs.value});
+}
+
 Cons cons(std::shared_ptr<Object const> const first,
 		std::shared_ptr<Object const> const second) {
 	return Cons{first, second};
@@ -229,4 +258,19 @@ std::shared_ptr<Object const> wrapped_quote(Cons const &args, Cons const &env) {
 	}
 
 	return car(args);
+}
+
+std::shared_ptr<Object const> wrapped_add(Cons const &args, Cons const &env) {
+	if(is_nil(args)) {
+		return std::make_shared<Object const>(Integer{0});
+	} else {
+		auto const lhs = eval(car(args), env);
+		auto const unevaluated_rhs = cdr(args);
+		if(!std::holds_alternative<Cons>(*unevaluated_rhs)) {
+			return std::make_shared<Object const>(Error{
+					"Arguments passed to wrapped_add must be a proper list"});
+		}
+		auto const rhs = wrapped_add(std::get<Cons>(*unevaluated_rhs), env);
+		return add(lhs, rhs);
+	}
 }

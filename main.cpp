@@ -24,6 +24,7 @@ int main() {
 	auto const env = make_list(
 			X(cons(X(Symbol{"car"}), X(BuiltinFunction{wrapped_car}))),
 			X(cons(X(Symbol{"cdr"}), X(BuiltinFunction{wrapped_cdr}))),
+			X(cons(X(Symbol{"+"}), X(BuiltinFunction{wrapped_add}))),
 			X(cons(X(Symbol{"quote"}), X(BuiltinFunction{wrapped_quote}))));
 #undef X
 
@@ -34,6 +35,10 @@ int main() {
 	eval_print("(car '(4 9 16))", env);
 	eval_print("(cdr '(abc def))", env);
 	eval_print("(cdr '(abc . def))", env);
+	eval_print("(+)", env);
+	eval_print("(+ 10)", env);
+	eval_print("(+ 10 20)", env);
+	eval_print("(+ 10 20 50)", env);
 
 	return EXIT_SUCCESS;
 }

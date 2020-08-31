@@ -12,6 +12,9 @@ std::shared_ptr<Object const> car(std::shared_ptr<Object const> const obj);
 std::shared_ptr<Object const> car(Cons const &obj);
 std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> const obj);
 std::shared_ptr<Object const> cdr(Cons const &obj);
+std::shared_ptr<Object const> add(std::shared_ptr<Object const> const lhs,
+		std::shared_ptr<Object const> const rhs);
+std::shared_ptr<Object const> add(Integer const &lhs, Integer const &rhs);
 
 Cons cons(std::shared_ptr<Object const> const first,
 		std::shared_ptr<Object const> const second);
@@ -56,3 +59,4 @@ std::shared_ptr<Object const> eval(Integer const &integer, Cons const &env);
 std::shared_ptr<Object const> wrapped_car(Cons const &args, Cons const &env);
 std::shared_ptr<Object const> wrapped_cdr(Cons const &args, Cons const &env);
 std::shared_ptr<Object const> wrapped_quote(Cons const &args, Cons const &env);
+std::shared_ptr<Object const> wrapped_add(Cons const &args, Cons const &env);
