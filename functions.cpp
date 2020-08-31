@@ -63,33 +63,23 @@ std::shared_ptr<Object const> cdr(Cons const &obj) {
 	}
 }
 
-std::shared_ptr<Object const> add(std::shared_ptr<Object const> const lhs,
-		std::shared_ptr<Object const> const rhs) {
-	if(std::holds_alternative<Error>(*lhs)) {
-		return lhs;
+std::shared_ptr<Object const> add(std::shared_ptr<Object const> const lhs_obj,
+		std::shared_ptr<Object const> const rhs_obj) {
+	if(std::holds_alternative<Error>(*lhs_obj)) {
+		return lhs_obj;
 	}
-	if(std::holds_alternative<Error>(*rhs)) {
-		return rhs;
+	if(std::holds_alternative<Error>(*rhs_obj)) {
+		return rhs_obj;
 	}
 
-	return std::visit(
-			[](auto const &lhs_contained, auto const &rhs_contained) {
-				using T1 = std::decay_t<decltype(lhs_contained)>;
-				using T2 = std::decay_t<decltype(rhs_contained)>;
-				if constexpr(requires { add(lhs_contained, rhs_contained); }) {
-					return add(lhs_contained, rhs_contained);
-				} else {
-					return std::make_shared<Object const>(
-							Error{"add() called with invalid argument types "
-									+ std::string(name_of_type<T1>) + " and "
-									+ std::string(name_of_type<T2>)});
-				}
-			},
-			*lhs, *rhs);
-}
+	if(auto const lhs = std::get_if<Integer>(lhs_obj.get()),
+			rhs = std::get_if<Integer>(rhs_obj.get());
+			lhs && rhs) {
+		return std::make_shared<Object const>(Integer{lhs->value + rhs->value});
+	}
 
-std::shared_ptr<Object const> add(Integer const &lhs, Integer const &rhs) {
-	return std::make_shared<Object const>(Integer{lhs.value + rhs.value});
+	return std::make_shared<Object const>(
+			make_type_error("add", *lhs_obj, *rhs_obj));
 }
 
 Cons cons(std::shared_ptr<Object const> const first,
@@ -112,21 +102,15 @@ Cons make_list() {
 	return make_nil();
 }
 
-Cons join_two_lists(std::shared_ptr<Object const> const first,
-		std::shared_ptr<Object const> const second, Cons const &last) {
-	return std::visit(
-			[&last](auto const &first_contained, auto const &second_contained) {
-				if constexpr(requires {
-								 join_two_lists(first_contained,
-										 second_contained, last);
-							 }) {
-					return join_two_lists(
-							first_contained, second_contained, last);
-				} else {
-					return last;
-				}
-			},
-			*first, *second);
+Cons join_two_lists(std::shared_ptr<Object const> const first_obj,
+		std::shared_ptr<Object const> const second_obj, Cons const &last) {
+	if(auto const first = std::get_if<Cons>(first_obj.get()),
+			second = std::get_if<Cons>(second_obj.get());
+			first && second) {
+		return join_two_lists(*first, *second, last);
+	}
+
+	return last;
 }
 
 Cons join_two_lists(Cons const &first, Cons const &second, Cons const &last) {

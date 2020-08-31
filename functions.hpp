@@ -14,7 +14,6 @@ std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> const obj);
 std::shared_ptr<Object const> cdr(Cons const &obj);
 std::shared_ptr<Object const> add(std::shared_ptr<Object const> const lhs,
 		std::shared_ptr<Object const> const rhs);
-std::shared_ptr<Object const> add(Integer const &lhs, Integer const &rhs);
 
 Cons cons(std::shared_ptr<Object const> const first,
 		std::shared_ptr<Object const> const second);
@@ -55,3 +54,28 @@ std::shared_ptr<Object const> eval(Cons const &list, Cons const &env);
 std::shared_ptr<Object const> eval(Quote const &quote, Cons const &env);
 std::shared_ptr<Object const> eval(Symbol const &symbol, Cons const &env);
 std::shared_ptr<Object const> eval(Integer const &integer, Cons const &env);
+
+constexpr std::string_view name_of_contained_type(Object const &obj) {
+	return std::visit(
+			[](auto const &contained) {
+				return name_of_type<std::decay_t<decltype(contained)>>;
+			},
+			obj);
+}
+
+std::string make_type_error_helper(Object const &first, auto const &... rest) {
+	if constexpr(sizeof...(rest) == 0) {
+		return std::string(name_of_contained_type(first)) + ')';
+	} else {
+		return std::string(name_of_contained_type(first)) + ' '
+				+ make_type_error_helper(rest...);
+	}
+}
+
+Error make_type_error(
+		std::string_view const function_name, auto const &... objs) {
+	static_assert(sizeof...(objs));
+	return Error{std::string(function_name)
+			+ " is not callable with argument types ("
+			+ make_type_error_helper(objs...)};
+}
