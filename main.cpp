@@ -6,6 +6,7 @@
 #include "to-string.hpp"
 #include "lexer.hpp"
 #include "parser.hpp"
+#include "wrapped.hpp"
 
 void eval_print(std::string_view const expr_str, Cons const &env) {
 	auto const lexed = lex(expr_str);

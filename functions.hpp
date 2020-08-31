@@ -19,7 +19,7 @@ std::shared_ptr<Object const> add(Integer const &lhs, Integer const &rhs);
 Cons cons(std::shared_ptr<Object const> const first,
 		std::shared_ptr<Object const> const second);
 
-size_t list_length(size_t const accum, Cons const &list);
+size_t list_length(Cons const &list, size_t const accum = 0);
 
 Cons make_list();
 
@@ -55,8 +55,3 @@ std::shared_ptr<Object const> eval(Cons const &list, Cons const &env);
 std::shared_ptr<Object const> eval(Quote const &quote, Cons const &env);
 std::shared_ptr<Object const> eval(Symbol const &symbol, Cons const &env);
 std::shared_ptr<Object const> eval(Integer const &integer, Cons const &env);
-
-std::shared_ptr<Object const> wrapped_car(Cons const &args, Cons const &env);
-std::shared_ptr<Object const> wrapped_cdr(Cons const &args, Cons const &env);
-std::shared_ptr<Object const> wrapped_quote(Cons const &args, Cons const &env);
-std::shared_ptr<Object const> wrapped_add(Cons const &args, Cons const &env);
