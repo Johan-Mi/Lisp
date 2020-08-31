@@ -124,24 +124,22 @@ Cons join_two_lists(Cons const &first, Cons const &second, Cons const &last) {
 	}
 }
 
-std::shared_ptr<Object const> apply(std::shared_ptr<Object const> const func,
-		Cons const &args, Cons const &env) {
-	if(std::holds_alternative<Error>(*func)) {
-		return func;
+std::shared_ptr<Object const> apply(
+		std::shared_ptr<Object const> const func_obj, Cons const &args,
+		Cons const &env) {
+	if(std::holds_alternative<Error>(*func_obj)) {
+		return func_obj;
 	}
 
-	return std::visit(
-			[&args, &env](auto const &contained) {
-				using T = std::decay_t<decltype(contained)>;
-				if constexpr(requires { apply(contained, args, env); }) {
-					return apply(contained, args, env);
-				} else {
-					return std::make_shared<Object const>(
-							Error{"apply() called with invalid argument type "
-									+ std::string(name_of_type<T>)});
-				}
-			},
-			*func);
+	if(auto const func = std::get_if<Function>(func_obj.get()); func) {
+		return apply(*func, args, env);
+	}
+
+	if(auto const func = std::get_if<BuiltinFunction>(func_obj.get()); func) {
+		return apply(*func, args, env);
+	}
+
+	return std::make_shared<Object const>(make_type_error("apply", *func_obj));
 }
 
 std::shared_ptr<Object const> apply(
