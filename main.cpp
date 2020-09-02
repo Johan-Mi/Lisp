@@ -26,20 +26,36 @@ int main() {
 			X(cons(X(Symbol{"car"}), X(BuiltinFunction{wrapped_car}))),
 			X(cons(X(Symbol{"cdr"}), X(BuiltinFunction{wrapped_cdr}))),
 			X(cons(X(Symbol{"+"}), X(BuiltinFunction{wrapped_add}))),
+			X(cons(X(Symbol{"-"}), X(BuiltinFunction{wrapped_sub}))),
+			X(cons(X(Symbol{"*"}), X(BuiltinFunction{wrapped_mul}))),
 			X(cons(X(Symbol{"quote"}), X(BuiltinFunction{wrapped_quote}))));
 #undef X
 
-	eval_print("42", env);
-	eval_print("()", env);
-	eval_print("'()", env);
-	eval_print("(quote (1 2 3 4 5))", env);
-	eval_print("(car '(4 9 16))", env);
-	eval_print("(cdr '(abc def))", env);
-	eval_print("(cdr '(abc . def))", env);
-	eval_print("(+)", env);
-	eval_print("(+ 10)", env);
-	eval_print("(+ 10 20)", env);
-	eval_print("(+ 10 20 50)", env);
+	constexpr std::string_view tests[] = {
+			"42",
+			"()",
+			"'()",
+			"(quote (1 2 3 4 5))",
+			"(car '(4 9 16))",
+			"(cdr '(abc def))",
+			"(cdr '(abc . def))",
+			"(+)",
+			"(+ 10)",
+			"(+ 10 20)",
+			"(+ 10 20 50)",
+			"(-)",
+			"(- 10)",
+			"(- 10 30)",
+			"(- 10 20 50)",
+			"(*)",
+			"(* 10)",
+			"(* 10 20)",
+			"(* 10 20 50)",
+	};
+
+	for(auto const s : tests) {
+		eval_print(s, env);
+	}
 
 	return EXIT_SUCCESS;
 }

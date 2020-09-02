@@ -14,6 +14,10 @@ std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> const obj);
 std::shared_ptr<Object const> cdr(Cons const &obj);
 std::shared_ptr<Object const> add(std::shared_ptr<Object const> const lhs,
 		std::shared_ptr<Object const> const rhs);
+std::shared_ptr<Object const> sub(std::shared_ptr<Object const> const lhs,
+		std::shared_ptr<Object const> const rhs);
+std::shared_ptr<Object const> mul(std::shared_ptr<Object const> const lhs,
+		std::shared_ptr<Object const> const rhs);
 
 Cons cons(std::shared_ptr<Object const> const first,
 		std::shared_ptr<Object const> const second);

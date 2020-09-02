@@ -82,6 +82,44 @@ std::shared_ptr<Object const> add(std::shared_ptr<Object const> const lhs_obj,
 			make_type_error("add", *lhs_obj, *rhs_obj));
 }
 
+std::shared_ptr<Object const> sub(std::shared_ptr<Object const> const lhs_obj,
+		std::shared_ptr<Object const> const rhs_obj) {
+	if(std::holds_alternative<Error>(*lhs_obj)) {
+		return lhs_obj;
+	}
+	if(std::holds_alternative<Error>(*rhs_obj)) {
+		return rhs_obj;
+	}
+
+	if(auto const lhs = std::get_if<Integer>(lhs_obj.get()),
+			rhs = std::get_if<Integer>(rhs_obj.get());
+			lhs && rhs) {
+		return std::make_shared<Object const>(Integer{lhs->value - rhs->value});
+	}
+
+	return std::make_shared<Object const>(
+			make_type_error("sub", *lhs_obj, *rhs_obj));
+}
+
+std::shared_ptr<Object const> mul(std::shared_ptr<Object const> const lhs_obj,
+		std::shared_ptr<Object const> const rhs_obj) {
+	if(std::holds_alternative<Error>(*lhs_obj)) {
+		return lhs_obj;
+	}
+	if(std::holds_alternative<Error>(*rhs_obj)) {
+		return rhs_obj;
+	}
+
+	if(auto const lhs = std::get_if<Integer>(lhs_obj.get()),
+			rhs = std::get_if<Integer>(rhs_obj.get());
+			lhs && rhs) {
+		return std::make_shared<Object const>(Integer{lhs->value * rhs->value});
+	}
+
+	return std::make_shared<Object const>(
+			make_type_error("mul", *lhs_obj, *rhs_obj));
+}
+
 Cons cons(std::shared_ptr<Object const> const first,
 		std::shared_ptr<Object const> const second) {
 	return Cons{first, second};
