@@ -3,50 +3,55 @@
 std::vector<Token> lex(std::string_view sv) {
 	std::vector<Token> ret;
 
-	Token current_token;
+	decltype(sv)::const_iterator ident_begin = nullptr;
 
 	while(true) {
 		if(sv.empty()) {
-			if(!current_token.str.empty()) {
-				ret.push_back(current_token);
+			if(ident_begin) {
+				ret.emplace_back(TokenType::Ident,
+						std::string(ident_begin, sv.cbegin()));
 			}
 			return ret;
 		}
 
 		switch(sv[0]) {
 			case '(':
-				if(!current_token.str.empty()) {
-					ret.push_back(current_token);
-					current_token.str.clear();
+				if(ident_begin) {
+					ret.emplace_back(TokenType::Ident,
+							std::string(ident_begin, sv.cbegin()));
+					ident_begin = nullptr;
 				}
 				ret.emplace_back(TokenType::LParen);
 				break;
 			case ')':
-				if(!current_token.str.empty()) {
-					ret.push_back(current_token);
-					current_token.str.clear();
+				if(ident_begin) {
+					ret.emplace_back(TokenType::Ident,
+							std::string(ident_begin, sv.cbegin()));
+					ident_begin = nullptr;
 				}
 				ret.emplace_back(TokenType::RParen);
 				break;
 			case '\'':
-				if(!current_token.str.empty()) {
-					ret.push_back(current_token);
-					current_token.str.clear();
+				if(ident_begin) {
+					ret.emplace_back(TokenType::Ident,
+							std::string(ident_begin, sv.cbegin()));
+					ident_begin = nullptr;
 				}
 				ret.emplace_back(TokenType::Quote);
 				break;
 			case ' ':
 			case '\t':
 			case '\n':
-				if(!current_token.str.empty()) {
-					ret.push_back(current_token);
-					current_token.str.clear();
+				if(ident_begin) {
+					ret.emplace_back(TokenType::Ident,
+							std::string(ident_begin, sv.cbegin()));
+					ident_begin = nullptr;
 				}
 				break;
 			default:
-				current_token.str += sv[0]; // TODO Only modify str once, maybe
-											// use a string_view?
-				current_token.type = TokenType::Ident;
+				if(!ident_begin) {
+					ident_begin = sv.cbegin();
+				}
 		}
 		sv.remove_prefix(1);
 	}
