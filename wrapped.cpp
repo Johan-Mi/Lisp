@@ -47,7 +47,7 @@ std::shared_ptr<Object const> wrapped_cons(Cons const &args, Cons const &env) {
 	}
 
 	return std::make_shared<Object const>(
-			cons(eval(car(args), env), eval(car(cdr(args)), env)));
+			Cons{eval(car(args), env), eval(car(cdr(args)), env)});
 }
 
 std::shared_ptr<Object const> wrapped_add(Cons const &args, Cons const &env) {

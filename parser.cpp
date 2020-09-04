@@ -51,18 +51,18 @@ std::optional<std::tuple<Cons, TokenIter>> parse_cons_helper(
 			if(auto const c = parse_expression(*b, end); c) {
 				if(auto const d = parse_rparen(std::get<TokenIter>(*c), end);
 						d) {
-					return {{cons(std::get<std::shared_ptr<Object const>>(*a),
+					return {{Cons{std::get<std::shared_ptr<Object const>>(*a),
 									 std::get<std::shared_ptr<Object const>>(
-											 *c)),
+											 *c)},
 							*d}};
 				}
 			}
 		} else if(auto const b
 				  = parse_cons_helper(std::get<TokenIter>(*a), end);
 				  b) {
-			return {{cons(std::get<std::shared_ptr<Object const>>(*a),
+			return {{Cons{std::get<std::shared_ptr<Object const>>(*a),
 							 std::make_shared<Object const>(
-									 std::get<Cons>(*b))),
+									 std::get<Cons>(*b))},
 					std::get<TokenIter>(*b)}};
 		}
 	}

@@ -23,13 +23,13 @@ void eval_print(std::string_view const expr_str, Cons const &env) {
 int main() {
 #define X std::make_shared<Object const>
 	auto const env = make_list(
-			X(cons(X(Symbol{"car"}), X(BuiltinFunction{wrapped_car}))),
-			X(cons(X(Symbol{"cdr"}), X(BuiltinFunction{wrapped_cdr}))),
-			X(cons(X(Symbol{"cons"}), X(BuiltinFunction{wrapped_cons}))),
-			X(cons(X(Symbol{"+"}), X(BuiltinFunction{wrapped_add}))),
-			X(cons(X(Symbol{"-"}), X(BuiltinFunction{wrapped_sub}))),
-			X(cons(X(Symbol{"*"}), X(BuiltinFunction{wrapped_mul}))),
-			X(cons(X(Symbol{"quote"}), X(BuiltinFunction{wrapped_quote}))));
+			X(Cons{X(Symbol{"car"}), X(BuiltinFunction{wrapped_car})}),
+			X(Cons{X(Symbol{"cdr"}), X(BuiltinFunction{wrapped_cdr})}),
+			X(Cons{X(Symbol{"cons"}), X(BuiltinFunction{wrapped_cons})}),
+			X(Cons{X(Symbol{"+"}), X(BuiltinFunction{wrapped_add})}),
+			X(Cons{X(Symbol{"-"}), X(BuiltinFunction{wrapped_sub})}),
+			X(Cons{X(Symbol{"*"}), X(BuiltinFunction{wrapped_mul})}),
+			X(Cons{X(Symbol{"quote"}), X(BuiltinFunction{wrapped_quote})}));
 #undef X
 
 	constexpr std::string_view tests[] = {

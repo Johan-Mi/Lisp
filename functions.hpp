@@ -19,22 +19,19 @@ std::shared_ptr<Object const> sub(std::shared_ptr<Object const> const lhs,
 std::shared_ptr<Object const> mul(std::shared_ptr<Object const> const lhs,
 		std::shared_ptr<Object const> const rhs);
 
-Cons cons(std::shared_ptr<Object const> const first,
-		std::shared_ptr<Object const> const second);
-
 size_t list_length(Cons const &list, size_t const accum = 0);
 
 Cons make_list();
 
 Cons make_list(auto const &first, auto const &... rest) {
-	return cons(first, std::make_shared<Object const>(make_list(rest...)));
+	return Cons{first, std::make_shared<Object const>(make_list(rest...))};
 }
 
 Cons make_unterminated_list(
 		auto const &first, auto const &second, auto const &... rest) {
-	return cons(first,
+	return Cons{first,
 			std::make_shared<Object const>(
-					make_unterminated_list(second, rest...)));
+					make_unterminated_list(second, rest...))};
 }
 
 Cons make_unterminated_list(auto const &first, auto const &second) {

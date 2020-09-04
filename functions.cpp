@@ -120,11 +120,6 @@ std::shared_ptr<Object const> mul(std::shared_ptr<Object const> const lhs_obj,
 			make_type_error("mul", *lhs_obj, *rhs_obj));
 }
 
-Cons cons(std::shared_ptr<Object const> const first,
-		std::shared_ptr<Object const> const second) {
-	return Cons{first, second};
-}
-
 size_t list_length(Cons const &list, size_t const accum) {
 	if(is_nil(list)) {
 		return accum;
@@ -155,10 +150,10 @@ Cons join_two_lists(Cons const &first, Cons const &second, Cons const &last) {
 	if(is_nil(first) || is_nil(second)) {
 		return last;
 	} else {
-		return cons(
-				std::make_shared<Object const>(cons(car(first), car(second))),
+		return Cons{
+				std::make_shared<Object const>(Cons{car(first), car(second)}),
 				std::make_shared<Object const>(
-						join_two_lists(cdr(first), cdr(second), last)));
+						join_two_lists(cdr(first), cdr(second), last))};
 	}
 }
 
