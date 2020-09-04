@@ -37,6 +37,19 @@ std::shared_ptr<Object const> wrapped_quote(Cons const &args, Cons const &env) {
 	return car(args);
 }
 
+std::shared_ptr<Object const> wrapped_cons(Cons const &args, Cons const &env) {
+	size_t const num_args = list_length(args);
+
+	if(num_args != 2) {
+		return std::make_shared<Object const>(
+				Error{"wrapped_cons() expected 2 arguments but got "
+						+ std::to_string(num_args)});
+	}
+
+	return std::make_shared<Object const>(
+			cons(eval(car(args), env), eval(car(cdr(args)), env)));
+}
+
 std::shared_ptr<Object const> wrapped_add(Cons const &args, Cons const &env) {
 	if(is_nil(args)) {
 		return std::make_shared<Object const>(Integer{0});
