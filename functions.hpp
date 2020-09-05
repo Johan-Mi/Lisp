@@ -80,3 +80,8 @@ Error make_type_error(
 			+ " is not callable with argument types ("
 			+ make_type_error_helper(objs...)};
 }
+
+bool is_proper_list(Cons const &list);
+
+std::optional<Error> ensure_n_args(
+		std::string_view const func_name, size_t n, Cons const &list);

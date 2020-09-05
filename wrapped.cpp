@@ -2,48 +2,32 @@
 #include "functions.hpp"
 
 std::shared_ptr<Object const> wrapped_car(Cons const &args, Cons const &env) {
-	size_t const num_args = list_length(args);
-
-	if(num_args != 1) {
-		return std::make_shared<Object const>(
-				Error{"wrapped_car() expected 1 argument but got "
-						+ std::to_string(num_args)});
+	if(auto const err = ensure_n_args("wrapped_car", 1, args)) {
+		return std::make_shared<Object const>(*err);
 	}
 
 	return car(eval(car(args), env));
 }
 
 std::shared_ptr<Object const> wrapped_cdr(Cons const &args, Cons const &env) {
-	size_t const num_args = list_length(args);
-
-	if(num_args != 1) {
-		return std::make_shared<Object const>(
-				Error{"wrapped_cdr() expected 1 argument but got "
-						+ std::to_string(num_args)});
+	if(auto const err = ensure_n_args("wrapped_cdr", 1, args)) {
+		return std::make_shared<Object const>(*err);
 	}
 
 	return cdr(eval(car(args), env));
 }
 
 std::shared_ptr<Object const> wrapped_quote(Cons const &args, Cons const &env) {
-	size_t const num_args = list_length(args);
-
-	if(num_args != 1) {
-		return std::make_shared<Object const>(
-				Error{"wrapped_quote() expected 1 argument but got "
-						+ std::to_string(num_args)});
+	if(auto const err = ensure_n_args("wrapped_quote", 1, args)) {
+		return std::make_shared<Object const>(*err);
 	}
 
 	return car(args);
 }
 
 std::shared_ptr<Object const> wrapped_cons(Cons const &args, Cons const &env) {
-	size_t const num_args = list_length(args);
-
-	if(num_args != 2) {
-		return std::make_shared<Object const>(
-				Error{"wrapped_cons() expected 2 arguments but got "
-						+ std::to_string(num_args)});
+	if(auto const err = ensure_n_args("wrapped_cons", 2, args)) {
+		return std::make_shared<Object const>(*err);
 	}
 
 	return std::make_shared<Object const>(
@@ -70,7 +54,7 @@ std::shared_ptr<Object const> wrapped_sub(Cons const &args, Cons const &env) {
 	switch(num_args) {
 		case 0:
 			return std::make_shared<Object const>(Error{
-					"wrapped_sub() expected at least 1 argument but got 0"});
+					"wrapped_sub expected at least 1 argument but got 0"});
 		case 1:
 			return sub(std::make_shared<Object const>(Integer{0}),
 					eval(car(args), env));

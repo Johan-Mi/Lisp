@@ -208,3 +208,31 @@ std::shared_ptr<Object const> eval(Symbol const &symbol, Cons const &env) {
 	return std::make_shared<Object const>(
 			Error{"Unbound variable " + to_string(symbol)});
 }
+
+bool is_proper_list(Cons const &list) {
+	if(is_nil(list)) {
+		return true;
+	} else {
+		if(auto const next = std::get_if<Cons>(cdr(list).get())) {
+			return is_proper_list(*next);
+		} else {
+			return false;
+		}
+	}
+}
+
+std::optional<Error> ensure_n_args(
+		std::string_view const func_name, size_t n, Cons const &list) {
+	if(!is_proper_list(list)) {
+		return {Error{"Call to " + std::string(func_name)
+				+ " must be a proper list"}};
+	}
+
+	size_t const length = list_length(list);
+	if(length != n) {
+		return {Error{std::string(func_name) + " expected " + std::to_string(n)
+				+ " arguments but got " + std::to_string(length)}};
+	}
+
+	return std::nullopt;
+}
