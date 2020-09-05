@@ -10,22 +10,14 @@ bool is_nil(Cons const &obj) {
 }
 
 std::shared_ptr<Object const> car(std::shared_ptr<Object const> const obj) {
-	if(std::holds_alternative<Error>(*obj)) {
-		return obj;
+	switch(obj->index()) {
+		case obj_index<Error>():
+			return obj;
+		case obj_index<Cons>():
+			return car(std::get<Cons>(*obj));
+		default:
+			return std::make_shared<Object const>(make_type_error("car", *obj));
 	}
-
-	return std::visit(
-			[](auto const &arg) {
-				using T = std::decay_t<decltype(arg)>;
-				if constexpr(requires { car(arg); }) {
-					return car(arg);
-				} else {
-					return std::make_shared<Object const>(
-							Error{"car() called with invalid argument type "
-									+ std::string(name_of_type<T>)});
-				}
-			},
-			*obj);
 }
 
 std::shared_ptr<Object const> car(Cons const &obj) {
@@ -37,22 +29,14 @@ std::shared_ptr<Object const> car(Cons const &obj) {
 }
 
 std::shared_ptr<Object const> cdr(std::shared_ptr<Object const> const obj) {
-	if(std::holds_alternative<Error>(*obj)) {
-		return obj;
+	switch(obj->index()) {
+		case obj_index<Error>():
+			return obj;
+		case obj_index<Cons>():
+			return cdr(std::get<Cons>(*obj));
+		default:
+			return std::make_shared<Object const>(make_type_error("cdr", *obj));
 	}
-
-	return std::visit(
-			[](auto const &arg) {
-				using T = std::decay_t<decltype(arg)>;
-				if constexpr(requires { cdr(arg); }) {
-					return cdr(arg);
-				} else {
-					return std::make_shared<Object const>(
-							Error{"cdr() called with invalid argument type "
-									+ std::string(name_of_type<T>)});
-				}
-			},
-			*obj);
 }
 
 std::shared_ptr<Object const> cdr(Cons const &obj) {
@@ -160,19 +144,17 @@ Cons join_two_lists(Cons const &first, Cons const &second, Cons const &last) {
 std::shared_ptr<Object const> apply(
 		std::shared_ptr<Object const> const func_obj, Cons const &args,
 		Cons const &env) {
-	if(std::holds_alternative<Error>(*func_obj)) {
-		return func_obj;
+	switch(func_obj->index()) {
+		case obj_index<Error>():
+			return func_obj;
+		case obj_index<Function>():
+			return apply(std::get<Function>(*func_obj), args, env);
+		case obj_index<BuiltinFunction>():
+			return apply(std::get<BuiltinFunction>(*func_obj), args, env);
+		default:
+			return std::make_shared<Object const>(
+					make_type_error("apply", *func_obj));
 	}
-
-	if(auto const func = std::get_if<Function>(func_obj.get()); func) {
-		return apply(*func, args, env);
-	}
-
-	if(auto const func = std::get_if<BuiltinFunction>(func_obj.get()); func) {
-		return apply(*func, args, env);
-	}
-
-	return std::make_shared<Object const>(make_type_error("apply", *func_obj));
 }
 
 std::shared_ptr<Object const> apply(

@@ -1,8 +1,21 @@
 #pragma once
 
 #include <string>
+#include <variant>
 
 #include "types.hpp"
+
+template<typename T, size_t index = 0>
+constexpr size_t obj_index() {
+	if constexpr(index == std::variant_size_v<Object>) {
+		return index;
+	} else if constexpr(std::is_same_v<
+								std::variant_alternative_t<index, Object>, T>) {
+		return index;
+	} else {
+		return obj_index<T, index + 1>();
+	}
+}
 
 Cons make_nil();
 
