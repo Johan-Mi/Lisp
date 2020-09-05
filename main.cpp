@@ -26,6 +26,7 @@ int main() {
 			X(Cons{X(Symbol{"car"}), X(BuiltinFunction{wrapped_car})}),
 			X(Cons{X(Symbol{"cdr"}), X(BuiltinFunction{wrapped_cdr})}),
 			X(Cons{X(Symbol{"cons"}), X(BuiltinFunction{wrapped_cons})}),
+			X(Cons{X(Symbol{"lambda"}), X(BuiltinFunction{wrapped_lambda})}),
 			X(Cons{X(Symbol{"+"}), X(BuiltinFunction{wrapped_add})}),
 			X(Cons{X(Symbol{"-"}), X(BuiltinFunction{wrapped_sub})}),
 			X(Cons{X(Symbol{"*"}), X(BuiltinFunction{wrapped_mul})}),
@@ -53,6 +54,8 @@ int main() {
 			"(* 10 20)",
 			"(* 10 20 50)",
 			"(cons (+ 2 3) (* 2 3))",
+			"((lambda (n) (* n n)) (+ 2 3))",
+			"((lambda (f x) (f (f x))) (lambda (n) (+ n 1)) 7)",
 	};
 
 	for(auto const s : tests) {

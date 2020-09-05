@@ -141,6 +141,20 @@ Cons join_two_lists(Cons const &first, Cons const &second, Cons const &last) {
 	}
 }
 
+Cons eval_list_elements(Cons const &list, Cons const &env) {
+	if(is_nil(list)) {
+		return list;
+	} else if(std::holds_alternative<Cons>(*cdr(list))) {
+		return Cons{eval(car(list), env),
+				std::make_shared<Object const>(
+						eval_list_elements(std::get<Cons>(*cdr(list)), env))};
+	} else {
+		return Cons{eval(car(list), env),
+				std::make_shared<Object const>(make_nil())};
+		// TODO Don't pretend that all lists are null-terminated
+	}
+}
+
 std::shared_ptr<Object const> apply(
 		std::shared_ptr<Object const> const func_obj, Cons const &args,
 		Cons const &env) {
@@ -164,7 +178,9 @@ std::shared_ptr<Object const> apply(
 
 std::shared_ptr<Object const> apply(
 		Function const &func, Cons const &args, Cons const &env) {
-	return eval(func.body, join_two_lists(func.parameters, args, env));
+	return eval(func.body,
+			join_two_lists(
+					func.parameters, eval_list_elements(args, env), env));
 }
 
 std::shared_ptr<Object const> eval(
@@ -176,20 +192,25 @@ std::shared_ptr<Object const> eval(
 		case obj_index<BuiltinFunction>():
 			return expr;
 		case obj_index<Cons>():
-			return eval(std::get<Cons>(*expr), env);
+			if(auto const contained = std::get<Cons>(*expr);
+					is_nil(contained)) {
+				return expr;
+			} else {
+				return eval(contained, env);
+			}
 		case obj_index<Symbol>():
 			return eval(std::get<Symbol>(*expr), env);
 		case obj_index<Quote>():
 			return std::get<Quote>(*expr).contained;
 	}
 	return nullptr; // Unreachable
+					// ...unless expr is valueless, but that *should* never
+					// happen
 }
 
 std::shared_ptr<Object const> eval(Cons const &list, Cons const &env) {
-	if(is_nil(list)) {
-		return std::make_shared<Object const>(make_nil());
-	} else if(std::holds_alternative<Cons>(*cdr(list))) {
-		return apply(eval(car(list), env), std::get<Cons>(*cdr(list)), env);
+	if(auto const args = std::get_if<Cons>(cdr(list).get())) {
+		return apply(eval(car(list), env), *args, env);
 	} else {
 		return std::make_shared<Object const>(
 				Error{"car of argument passed to eval(cons) must be a cons"});

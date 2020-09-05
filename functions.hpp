@@ -44,6 +44,8 @@ Cons join_two_lists(std::shared_ptr<Object const> const first,
 		std::shared_ptr<Object const> const second, Cons const &last);
 Cons join_two_lists(Cons const &first, Cons const &second, Cons const &last);
 
+Cons eval_list_elements(Cons const &list, Cons const &env);
+
 std::shared_ptr<Object const> apply(std::shared_ptr<Object const> const func,
 		Cons const &args, Cons const &env);
 std::shared_ptr<Object const> apply(

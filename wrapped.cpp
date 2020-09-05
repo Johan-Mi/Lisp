@@ -84,3 +84,22 @@ std::shared_ptr<Object const> wrapped_mul(Cons const &args, Cons const &env) {
 		return mul(lhs, rhs);
 	}
 }
+
+std::shared_ptr<Object const> wrapped_lambda(
+		Cons const &args, Cons const &env) {
+	if(auto const err = ensure_n_args("wrapped_lambda", 2, args)) {
+		return std::make_shared<Object const>(*err);
+	}
+
+	switch(car(args)->index()) {
+		case obj_index<Error>():
+			return car(args);
+		case obj_index<Cons>():
+			return std::make_shared<Object const>(
+					Function{std::get<Cons>(*car(args)), car(cdr(args))});
+		default:
+			return std::make_shared<Object const>(Error{
+					"First argument of lambda definition must be a list of "
+					"parameters"});
+	}
+}
