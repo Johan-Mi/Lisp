@@ -40,17 +40,6 @@ Cons make_list(auto const &first, auto const &... rest) {
 	return Cons{first, std::make_shared<Object const>(make_list(rest...))};
 }
 
-Cons make_unterminated_list(
-		auto const &first, auto const &second, auto const &... rest) {
-	return Cons{first,
-			std::make_shared<Object const>(
-					make_unterminated_list(second, rest...))};
-}
-
-Cons make_unterminated_list(auto const &first, auto const &second) {
-	return cons(first, second);
-}
-
 Cons join_two_lists(std::shared_ptr<Object const> const first,
 		std::shared_ptr<Object const> const second, Cons const &last);
 Cons join_two_lists(Cons const &first, Cons const &second, Cons const &last);
@@ -65,9 +54,7 @@ std::shared_ptr<Object const> apply(
 std::shared_ptr<Object const> eval(
 		std::shared_ptr<Object const> const expr, Cons const &env);
 std::shared_ptr<Object const> eval(Cons const &list, Cons const &env);
-std::shared_ptr<Object const> eval(Quote const &quote, Cons const &env);
 std::shared_ptr<Object const> eval(Symbol const &symbol, Cons const &env);
-std::shared_ptr<Object const> eval(Integer const &integer, Cons const &env);
 
 constexpr std::string_view name_of_contained_type(Object const &obj) {
 	return std::visit(

@@ -169,22 +169,20 @@ std::shared_ptr<Object const> apply(
 
 std::shared_ptr<Object const> eval(
 		std::shared_ptr<Object const> const expr, Cons const &env) {
-	if(std::holds_alternative<Error>(*expr)) {
-		return expr;
+	switch(expr->index()) {
+		case obj_index<Error>():
+		case obj_index<Integer>():
+		case obj_index<Function>():
+		case obj_index<BuiltinFunction>():
+			return expr;
+		case obj_index<Cons>():
+			return eval(std::get<Cons>(*expr), env);
+		case obj_index<Symbol>():
+			return eval(std::get<Symbol>(*expr), env);
+		case obj_index<Quote>():
+			return std::get<Quote>(*expr).contained;
 	}
-
-	return std::visit(
-			[&env](auto const &contained) {
-				using T = std::decay_t<decltype(contained)>;
-				if constexpr(requires { eval(contained, env); }) {
-					return eval(contained, env);
-				} else {
-					return std::make_shared<Object const>(
-							Error{"eval() called with invalid argument type "
-									+ std::string(name_of_type<T>)});
-				}
-			},
-			*expr);
+	return nullptr; // Unreachable
 }
 
 std::shared_ptr<Object const> eval(Cons const &list, Cons const &env) {
@@ -198,25 +196,15 @@ std::shared_ptr<Object const> eval(Cons const &list, Cons const &env) {
 	}
 }
 
-std::shared_ptr<Object const> eval(Quote const &quote, Cons const &env) {
-	return quote.contained;
-}
-
 std::shared_ptr<Object const> eval(Symbol const &symbol, Cons const &env) {
-	if(is_nil(env)) {
-		return std::make_shared<Object const>(
-				Error{"Unbound variable " + to_string(symbol)});
-	} else if(std::holds_alternative<Symbol>(*car(car(env)))
-			&& std::get<Symbol>(*car(car(env))) == symbol) {
-		return cdr(car(env));
-	} else if(std::holds_alternative<Cons>(*cdr(env))) {
-		return eval(symbol, std::get<Cons>(*cdr(env)));
-	} else {
-		return std::make_shared<Object const>(
-				Error{"Unbound variable " + to_string(symbol)});
+	if(!is_nil(env)) {
+		if(std::holds_alternative<Symbol>(*car(car(env)))
+				&& std::get<Symbol>(*car(car(env))) == symbol) {
+			return cdr(car(env));
+		} else if(std::holds_alternative<Cons>(*cdr(env))) {
+			return eval(symbol, std::get<Cons>(*cdr(env)));
+		}
 	}
-}
-
-std::shared_ptr<Object const> eval(Integer const &integer, Cons const &env) {
-	return std::make_shared<Object const>(integer);
+	return std::make_shared<Object const>(
+			Error{"Unbound variable " + to_string(symbol)});
 }
