@@ -149,3 +149,6 @@ std::optional<std::tuple<Cons, TokenIter>> parse_cons_helper(
 
 std::optional<std::tuple<std::shared_ptr<Object const>, TokenIter>>
 parse_expression(TokenIter begin, TokenIter end);
+
+std::optional<std::tuple<std::vector<std::shared_ptr<Object const>>, TokenIter>>
+parse_expressions(TokenIter begin, TokenIter end);

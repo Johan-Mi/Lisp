@@ -88,3 +88,21 @@ parse_expression(TokenIter begin, TokenIter end) {
 		return std::nullopt;
 	}
 }
+
+std::optional<std::tuple<std::vector<std::shared_ptr<Object const>>, TokenIter>>
+parse_expressions(TokenIter begin, TokenIter end) {
+	std::vector<std::shared_ptr<Object const>> ret;
+
+	while(true) {
+		if(auto const a = parse_expression(begin, end)) {
+			ret.push_back(std::get<std::shared_ptr<Object const>>(*a));
+			begin = std::get<TokenIter>(*a);
+		} else {
+			if(ret.empty()) {
+				return std::nullopt;
+			} else {
+				return {{ret, begin}};
+			}
+		}
+	}
+}
